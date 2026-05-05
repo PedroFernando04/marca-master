@@ -1,0 +1,43 @@
+import Header from "../components/Header";
+import Card from "../components/Card";
+import SlideButton from "../components/SlideButton";
+import CardConsulta from "../components/CardConsulta";
+import { useState } from "react";
+
+export default function Home(){
+
+    const [aba, setAba] = useState ("agendamento");
+
+    return(
+        <div className="h-screen">
+
+            <Header></Header>
+
+            <div>
+                <SlideButton onChange={setAba} texto1={"Agendamento"} texto2={"Minhas consultas"}></SlideButton>
+
+                {aba === "agendamento" && (
+                    <div>
+                        <h1 className="flex justify-center p-2 text-3xl font-bold">Qual tipo de atendimento você precisa?</h1>
+
+                            <div className="flex justify-center">
+                                <Card tipo = "geral"></Card>
+
+                                <Card tipo = "especialista"></Card>
+                            </div>
+                    </div>
+                )}
+
+                {aba === "consultas" && (
+                    <div className="flex flex-col justify-center items-center">
+                        <h1 className="p-10"></h1>
+
+                        <CardConsulta></CardConsulta>
+                    </div>
+                )}
+
+
+            </div>
+        </div>
+    );
+}
