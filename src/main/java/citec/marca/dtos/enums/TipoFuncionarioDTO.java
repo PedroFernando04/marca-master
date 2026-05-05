@@ -1,15 +1,14 @@
-package citec.marca.dtos;
+package citec.marca.dtos.enums;
 
 import lombok.Getter;
 
 @Getter
-public class EspecialidadeDTO {
+public class TipoFuncionarioDTO {
     private String codigo;
     private String descricao;
 
-    public EspecialidadeDTO(String codigo, String descricao) {
+    public TipoFuncionarioDTO(String codigo, String descricao) {
         this.codigo = codigo;
         this.descricao = descricao;
     }
-
 }

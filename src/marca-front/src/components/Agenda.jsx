@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Button from "./Button";
+import Select from "./Select";
 
     function gerarCalendario(ano, mes){
 
@@ -82,19 +83,6 @@ export default function Agenda({ajuste, tipoAgenda}){
             toggleDia(dia);
         }
     }
-    const [especialidades, setEspecialidades] = useState([]);
-    const [especialidadeSelecionada, setEspecialidadeSelecionada] = useState("");
-
-    useEffect(() => {
-        async function buscarEspecialidades() {
-            const response = await fetch("http://localhost:8080/especialidades");
-            const data = await response.json();
-            setEspecialidades(data);
-        }
-
-        buscarEspecialidades();
-    }, []);
-
 
     async function enviarDias() {
         try {
@@ -183,19 +171,7 @@ export default function Agenda({ajuste, tipoAgenda}){
 
             <div className="flex justify-end mt-6">
 
-                <select
-                    value={especialidadeSelecionada}
-                    onChange={(e) => setEspecialidadeSelecionada(e.target.value)}
-                    className="border border-gray-300 rounded-xl p-2 shadow-sm"
-                >
-                    <option value="">Selecione a especialidade</option>
-
-                    {especialidades.map((esp, i) => (
-                        <option key={i} value={esp.codigo}>
-                            {esp.descricao}
-                        </option>
-                    ))}
-                </select>
+                <Select tipo = "especialidade"></Select>
 
                 <Button onClick={enviarDias} cor="fundo">
                     Salvar dias

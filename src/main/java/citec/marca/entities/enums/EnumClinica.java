@@ -8,14 +8,14 @@ public enum EnumClinica {
     UBS ("UBS", "Rua Odete Pacheco, 38, Farol "),
     UDA ("UDA"," Rua Odete Pacheco, 79, Farol");
 
-    private String nome;
+    private String descricao;
     private String endereco;
 
-    EnumClinica(String nome, String endereco) {
-        this.nome = nome;
+    EnumClinica(String descricao, String endereco) {
+        this.descricao = descricao;
         this.endereco = endereco;
     }
 
-    public String getNome() {return this.nome;}
+    public String getDescricao() {return this.descricao;}
     public String getEndereco() {return this.endereco;}
 }

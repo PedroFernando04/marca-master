@@ -22,7 +22,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/api/usuarios/cadastrar",
-                                "/api/usuarios/entrar").permitAll()
+                                "/api/usuarios/entrar",
+                                "/api/paciente/cadastrar",
+                                "/api/funcionario/cadastrar",
+                                "/api/enum/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

@@ -57,6 +57,7 @@ export default function Entrar(){
             });
 
             if(api.status === 200){
+                localStorage.setItem("logado", "true");
                 navigate("/home");
             } else {
                 alert("Erro! \nLogin ou senha incorreto");

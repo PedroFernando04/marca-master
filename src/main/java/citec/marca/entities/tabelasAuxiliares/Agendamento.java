@@ -1,5 +1,6 @@
 package citec.marca.entities.tabelasAuxiliares;
 
+import citec.marca.entities.enums.EnumClinica;
 import citec.marca.entities.enums.EnumTipoAgendamento;
 import citec.marca.entities.tabelasPrincipais.Paciente;
 import jakarta.persistence.*;
@@ -21,9 +22,9 @@ public class Agendamento {
     @ManyToOne
     private Paciente paciente;
 
-    @JoinColumn
-    @ManyToOne
-    private Medico medico;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private EnumClinica clinica;
 
     @Column(nullable = false)
     private LocalDate data;
@@ -37,8 +38,8 @@ public class Agendamento {
 
     public Agendamento() {}
 
-    public Agendamento(Medico medico, LocalDate data, EnumTipoAgendamento tipo, String encaminhamentoMedicoPath) {
-        this.medico = medico;
+    public Agendamento(EnumClinica clinica, LocalDate data, EnumTipoAgendamento tipo, String encaminhamentoMedicoPath) {
+        this.clinica = clinica;
         this.data = data;
         this.tipo = tipo;
         this.encaminhamentoMedicoPath = encaminhamentoMedicoPath;

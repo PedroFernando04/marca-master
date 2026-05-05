@@ -1,5 +1,6 @@
 import Input from "../components/Input";
 import Button from "../components/Button";
+import Select from "../components/Select";
 import SlideButton from "../components/SlideButton";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +16,10 @@ export default function Cadastro(){
         cpf:"",
         telefone:"",
         email:"",
-        senha:""
+        senha:"",
+        matricula:"",
+        clinica:"",
+        tipoFuncionario:""
     });
 
     function validarEmail(email){
@@ -42,7 +46,7 @@ export default function Cadastro(){
         return valor.replace(/\D/g, "");
     }
 
-    function handleSubmit(e){
+    function handleSubmit(e, tipoUsuario){
         e.preventDefault();
 
         if(!validarEmail(form.email)){
@@ -50,10 +54,10 @@ export default function Cadastro(){
             return;
         }
 
-        cadastrar();
+        cadastrar(tipoUsuario);
     }
     
-    async function cadastrar({tipoUsuario}) {
+    async function cadastrar(tipoUsuario) {
         try{
             const formLimpo = {
                 ...form,
@@ -66,11 +70,11 @@ export default function Cadastro(){
             if(tipoUsuario === "paciente"){
                 linkCadastrar = "http://localhost:8080/api/paciente/cadastrar";
             } else if (tipoUsuario === "responsavel"){
-                linkCadastrar = "http://localhost:8080/api/responsavel/cadastrar";
+                linkCadastrar = "http://localhost:8080/api/funcionario/cadastrar";
             }
 
 
-            const res = await fetch("http://localhost:8080/api/usuarios/cadastrar", {
+            const res = await fetch(linkCadastrar, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -105,7 +109,7 @@ export default function Cadastro(){
                         <p className="ml-5">Preencha seus dados para começar</p>
                     </div>
 
-                    <form onSubmit = {handleSubmit} method="POST">
+                    <form onSubmit={(e) => handleSubmit(e, "paciente")} method="POST">
                         <Input tipo="nome" onChange={(valor) => handleChange("nome", valor)}></Input>
                         <Input tipo="cpf" onChange={(valor) => handleChange("cpf", valor)}></Input>
                         <Input tipo="telefone" onChange={(valor) => handleChange("telefone", valor)}></Input>
@@ -132,16 +136,33 @@ export default function Cadastro(){
                         <p className="ml-5">Preencha seus dados para começar</p>
                     </div>
 
-                    <form onSubmit = {handleSubmit} method="POST">
+                    <form onSubmit = {(e) => handleSubmit(e, "responsavel")} method="POST">
                         <Input tipo="nome" onChange={(valor) => handleChange("nome", valor)}></Input>
-                        <Input tipo="cpf" onChange={(valor) => handleChange("cpf", valor)}></Input>
-                        <Input tipo="telefone" onChange={(valor) => handleChange("telefone", valor)}></Input>
+                        <Input tipo="matricula" onChange={(valor) => handleChange("matricula", valor)}></Input>
                         <Input tipo="email" onChange={(valor) => handleChange("email", valor)}></Input>
                         {erroEmail && (
                             <span className="text-red-500 text-sm m-5">
                                 {erroEmail}
                             </span>
                         )}
+                        <div className="flex flex-col gap-2">
+                            <label className="text-base font-bold ml-5 mt-5">Clínica</label>
+                            <Select 
+                                tipo={"clinica"} 
+                                ajuste={"ml-5 w-[90%]"} 
+                                value={form.clinica} 
+                                onChange={(valor) => handleChange("clinica", valor)}>
+                            </Select>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="text-base font-bold ml-5 mt-5">Tipo</label>
+                            <Select 
+                                tipo={"tipoFuncionario"} 
+                                ajuste={"ml-5 w-[90%]"} 
+                                value={form.tipoFuncionario} 
+                                onChange={(valor) => handleChange("tipoFuncionario", valor)}>
+                            </Select>
+                        </div>
                         <Input tipo="senha" onChange={(valor) => handleChange("senha", valor)}></Input>
 
                         <Button cor="fundo" ajuste="m-5 w-[90%]" type="submit">

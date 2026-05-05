@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api/responsavel")
+@RequestMapping("/api/funcionario")
 public class FuncionarioController {
 
     @Autowired

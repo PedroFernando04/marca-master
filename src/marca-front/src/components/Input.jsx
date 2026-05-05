@@ -64,6 +64,13 @@ export default function Input({tipo, onChange}){
             placeholder: "Envie seu arquivo",
             label: "Encaminhamento",
             type: "file"
+        },
+
+        matricula: {
+            maxLength: 10,
+            placeholder: "Informe sua matrícula",
+            label: "Matrícula",
+            type: "text"
         }
     };
 
