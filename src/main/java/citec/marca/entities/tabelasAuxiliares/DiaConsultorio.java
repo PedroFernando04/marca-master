@@ -1,9 +1,6 @@
 package citec.marca.entities.tabelasAuxiliares;
 
-import citec.marca.entities.enums.EnumConsultorio;
-import citec.marca.entities.enums.EnumDiasSemana;
-import citec.marca.entities.enums.EnumEspecialidades;
-import citec.marca.entities.enums.EnumTurnos;
+import citec.marca.entities.enums.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,28 +14,29 @@ public class DiaConsultorio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private EnumConsultorio consultorio;
+    private EnumClinica clinica;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EnumDiasSemana diaSemana;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EnumEspecialidades especialidade;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EnumTurnos turno;
 
 
     public DiaConsultorio() {}
 
-    public DiaConsultorio(EnumConsultorio consultorio, EnumDiasSemana diasSemana, EnumEspecialidades especialidade, EnumTurnos turno) {
-        this.consultorio = consultorio;
+    public DiaConsultorio(EnumClinica clinica, EnumDiasSemana diasSemana, EnumEspecialidades especialidade, EnumTurnos turno) {
+        this.clinica = clinica;
         this.especialidade = especialidade;
         this.turno = turno;
+        this.diaSemana = diasSemana;
     }
 }

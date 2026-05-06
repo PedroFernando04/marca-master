@@ -2,7 +2,9 @@ package citec.marca.controllers;
 
 import citec.marca.entities.tabelasPrincipais.Paciente;
 import citec.marca.entities.tabelasPrincipais.Usuario;
+import citec.marca.repositories.tabelasAuxiliares.DiaConsultorioRepository;
 import citec.marca.services.PacienteService;
+import citec.marca.services.ScriptPadrao;
 import citec.marca.services.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +27,12 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private DiaConsultorioRepository diaConsultorioRepository;
+
+    @Autowired
+    private ScriptPadrao  scriptPadrao;
 
     @PostMapping("/entrar")
     public ResponseEntity<Usuario> entrar(@RequestBody Usuario usuarioDigitado,

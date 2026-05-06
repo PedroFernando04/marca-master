@@ -1,8 +1,39 @@
 import Header from "../components/Header";
 import Agenda from "../components/Agenda";
 import Button from "../components/Button";
+import Select from "../components/Select";
+import { useState, useEffect } from "react";
 
 export default function Agendar() {
+
+    const [clinica, setClinica] = useState("");
+    const [especialidade, setEspecialidade] = useState("");
+
+    const [clinicas, setClinicas] = useState([]);
+    const [especialidades, setEspecialidades] = useState([]);
+
+    useEffect(() => {
+        async function carregarEnums() {
+            try {
+                const [resClinicas, resEspecialidades] = await Promise.all([
+                    fetch("http://localhost:8080/api/enum/clinicas"),
+                    fetch("http://localhost:8080/api/enum/especialidades")
+                ]);
+
+                const clinicasData = await resClinicas.json();
+                const especialidadesData = await resEspecialidades.json();
+
+                setClinicas(clinicasData);
+                setEspecialidades(especialidadesData);
+
+            } catch (erro) {
+                console.error("Erro ao carregar enums:", erro);
+            }
+        }
+
+        carregarEnums();
+    }, []);
+
     return (
         <div className="min-h-screen">
 
@@ -51,7 +82,50 @@ export default function Agendar() {
 
                 {/* AGENDA */}
                 <div className="mt-8">
-                    <Agenda tipoAgenda="agendarConsulta" />
+                    <div>
+                        
+                    </div>
+                    <Select tipo={"clinica"} value={clinica} onChange={setClinica}>
+                        <option value="">Selecione a clínica</option>
+
+                        {clinicas.map(c => (
+                            <option key={c.codigo} value={c.codigo}>
+                                {c.descricao}
+                            </option>
+                        ))}
+                    </Select>
+                    
+                    {clinica && (
+                        <p className="text-sm text-gray-500 mt-2">
+                            {
+                                clinicas.find(c => c.codigo === clinica)?.endereco
+                            }
+                        </p>
+                    )}
+
+                    <Select tipo={"especialidade"} value={especialidade} onChange={setEspecialidade}>
+                        <option value="">Selecione a especialidade</option>
+
+                        {especialidades.map(e => (
+                            <option key={e.codigo} value={e.codigo}>
+                                {e.descricao}
+                            </option>
+                        ))}
+                    </Select>
+
+                    {(!clinica || !especialidade) && (
+                        <div className="text-center mt-10 text-gray-500">
+                            Selecione a clínica e a especialidade para visualizar os dias disponíveis
+                        </div>
+                    )}
+
+                    {clinica && especialidade && (
+                        <Agenda 
+                            tipoAgenda="agendarConsulta" 
+                            clinica={clinica}
+                            especialidade={especialidade}
+                        />
+                    )}
                 </div>
 
             </div>

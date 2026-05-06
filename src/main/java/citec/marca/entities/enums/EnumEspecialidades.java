@@ -23,7 +23,8 @@ public enum EnumEspecialidades {
     REUMATO ("Reumatologia"),
     PROCTO ("Procotologia"),
     MASTO ("Mastologia"),
-    HOMEOP ("Homeopatia");
+    HOMEOP ("Homeopatia"),
+    PNEUMOLOGIA ("Pneumologia");
 
 
 

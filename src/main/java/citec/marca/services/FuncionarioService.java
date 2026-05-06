@@ -1,8 +1,7 @@
 package citec.marca.services;
 
 import citec.marca.dtos.requests.LiberarDiaRequest;
-import citec.marca.entities.enums.EnumClinica;
-import citec.marca.entities.enums.EnumEspecialidades;
+import citec.marca.entities.enums.*;
 import citec.marca.entities.tabelasAuxiliares.DiasLiberados;
 import citec.marca.entities.tabelasPrincipais.Funcionario;
 import citec.marca.repositories.tabelasAuxiliares.DiasLiberadosRepository;
@@ -10,6 +9,7 @@ import citec.marca.repositories.tabelasPrincipais.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -43,9 +43,19 @@ public class FuncionarioService {
         return funcionarioRepository.save(funcionario);
     }
 
+    @Transactional
     public void liberarDias (LiberarDiaRequest request){
         EnumClinica clinica =
                 EnumClinica.valueOf(request.getClinica());
+
+        LocalDate dia0 = LocalDate.parse(request.getDias().get(0));
+        Integer ano = dia0.getYear();
+        Integer mes = dia0.getMonthValue();
+
+        LocalDate inicio = LocalDate.of(ano, mes, 1);
+        LocalDate fim = inicio.withDayOfMonth(inicio.lengthOfMonth());
+
+        diasLiberadosRepository.deleteByClinicaAndDataBetween(clinica, inicio, fim);
 
         for (String d : request.getDias()) {
 

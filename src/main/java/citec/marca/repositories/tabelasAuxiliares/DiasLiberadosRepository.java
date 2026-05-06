@@ -13,4 +13,6 @@ public interface DiasLiberadosRepository extends JpaRepository<DiasLiberados, Lo
     Optional<DiasLiberados> findByDataAndClinica(LocalDate data, EnumClinica clinica);
 
     List<DiasLiberados> findByClinicaAndDataBetween (EnumClinica clinica, LocalDate incio, LocalDate fim);
+
+    void deleteByClinicaAndDataBetween(EnumClinica clinica, LocalDate incio, LocalDate fim);
 }
