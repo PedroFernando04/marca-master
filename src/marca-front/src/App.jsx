@@ -6,7 +6,6 @@ import Home from "./telas/Home";
 import Agendar from "./telas/Agendar";
 import UsuarioLogado from "./config/UsuarioLogado";
 import PrivateRoute from "./config/PrivateRoute";
-import HomeResp from "./telas/responsavel/HomeResponsavel";
 import AgendarEspecialista from "./telas/paciente/AgendarEspecialista";
 
 function App() {
@@ -40,8 +39,6 @@ function App() {
           </PrivateRoute> 
         }
       />
-
-      <Route path = "/homeResponsavel" element={<HomeResp />} />
       <Route path = "/agendarEspecialista" element={<AgendarEspecialista />}/>
 
     </Routes>

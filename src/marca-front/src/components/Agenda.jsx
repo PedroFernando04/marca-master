@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "./Button";
 import Select from "./Select";
 
@@ -21,8 +21,7 @@ import Select from "./Select";
     }
 
 
-export default function Agenda({ajuste, tipoAgenda}){
-
+export default function Agenda({ajuste, tipoAgenda, clinica}){
     const hoje = new Date();
     const [mes, setMes] = useState(hoje.getMonth());
     const [ano, setAno] = useState(hoje.getFullYear());
@@ -62,7 +61,7 @@ export default function Agenda({ajuste, tipoAgenda}){
     const [diasOcupados, setDiasOcupados] = useState([]);
 
     function toggleDia(dia) {
-        const chave = `${ano}-${mes}-${dia}`;
+        const chave = `${ano}-${String(mes + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
 
         if (diasOcupados.includes(chave)) {
             setDiasOcupados(diasOcupados.filter(d => d !== chave));
@@ -84,28 +83,77 @@ export default function Agenda({ajuste, tipoAgenda}){
         }
     }
 
+
     async function enviarDias() {
         try {
-            const response = await fetch("http://localhost:8080/liberarDias", {
+            if (!clinica) {
+                alert("Selecione uma especialidade");
+                return;
+            }
+
+            const response = await fetch("http://localhost:8080/api/funcionario/liberarDias", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
+                credentials: "include",
                 body: JSON.stringify({
-                    dias: diasOcupados
+                    dias: diasOcupados,
+                    clinica: clinica
                 })
             });
 
+            
             if (!response.ok) {
                 throw new Error("Erro ao enviar dias");
             }
 
             alert("Dias enviados com sucesso!");
+            setDiasOcupados([]);
+
         } catch (erro) {
             console.error(erro);
             alert("Erro ao enviar para o servidor");
         }
     }
+
+    useEffect(() => {
+    async function buscarDias() {
+        if (!clinica) {
+            setDiasOcupados([]); 
+            return;
+        }
+        
+        let tipoBusca;
+        if(tipoAgenda === "agendarConsulta"){
+            tipoBusca = "especialidade"
+        }
+
+        if(tipoAgenda === "liberarDias"){
+            tipoBusca = "clinica"
+        }
+        
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/diasLiberados/${tipoBusca}?${tipoBusca}=${clinica}&ano=${ano}&mes=${mes + 1}`,
+                {
+                    credentials: "include"
+                }
+            );
+
+            if (!response.ok) throw new Error();
+
+            const data = await response.json();
+
+            setDiasOcupados(data);
+
+        } catch (err) {
+            console.error("Erro ao buscar dias:", err);
+          }
+        }
+
+        buscarDias();
+    }, [mes, ano, clinica]);
 
     return(
         <div className={` ${ajuste} max-w-6xl mx-auto p-5 bg-white rounded-lg shadow-lg mb-10`}>
@@ -132,16 +180,20 @@ export default function Agenda({ajuste, tipoAgenda}){
 
                 {diasMes.map((dia, i) => {
                 
-                const fimDeSemana = (i % 7 == 0 || (i + 1) % 7 == 0);
-                const chave = `${ano}-${mes}-${dia}`;
+                    if (dia === "") {
+                        return <div key={i} className="h-16" />;
+                    }
 
-                let ocupado;
+                    const fimDeSemana = (i % 7 == 0 || (i + 1) % 7 == 0);
+                    const chave = `${ano}-${String(mes + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
 
-                if (tipoAgenda === "liberarDias") {
-                    ocupado = dia !== "" && (fimDeSemana || !diasOcupados.includes(chave));
-                } else {
-                    ocupado = dia !== "" && (fimDeSemana || diasOcupados.includes(chave));
-                }
+                    let ocupado;
+
+                    if (tipoAgenda === "liberarDias") {
+                        ocupado = dia !== "" && (fimDeSemana || !diasOcupados.includes(chave));
+                    } else {
+                        ocupado = dia !== "" && (fimDeSemana || diasOcupados.includes(chave));
+                    }
 
                     return (
                         <div
@@ -170,8 +222,6 @@ export default function Agenda({ajuste, tipoAgenda}){
             </div>
 
             <div className="flex justify-end mt-6">
-
-                <Select tipo = "especialidade"></Select>
 
                 <Button onClick={enviarDias} cor="fundo">
                     Salvar dias

@@ -23,6 +23,9 @@ public class FuncionarioController {
 
         funcionarioService.liberarDias(request);
 
+        System.out.println(request.getDias());
+        System.out.println(request.getClinica());
+
         return ResponseEntity.ok("Dias salvos com sucesso");
     }
 

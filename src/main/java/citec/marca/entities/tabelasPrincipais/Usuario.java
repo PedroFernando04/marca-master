@@ -71,4 +71,8 @@ public class Usuario implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public String getTipo(){
+        return this.getClass().getSimpleName();
+    }
 }

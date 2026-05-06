@@ -1,10 +1,10 @@
 package citec.marca.services;
 
 import citec.marca.dtos.requests.LiberarDiaRequest;
+import citec.marca.entities.enums.EnumClinica;
 import citec.marca.entities.enums.EnumEspecialidades;
 import citec.marca.entities.tabelasAuxiliares.DiasLiberados;
 import citec.marca.entities.tabelasPrincipais.Funcionario;
-import citec.marca.entities.tabelasPrincipais.Paciente;
 import citec.marca.repositories.tabelasAuxiliares.DiasLiberadosRepository;
 import citec.marca.repositories.tabelasPrincipais.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,8 +44,8 @@ public class FuncionarioService {
     }
 
     public void liberarDias (LiberarDiaRequest request){
-        EnumEspecialidades especialidade =
-                EnumEspecialidades.valueOf(request.getEspecialidade());
+        EnumClinica clinica =
+                EnumClinica.valueOf(request.getClinica());
 
         for (String d : request.getDias()) {
 
@@ -52,16 +53,29 @@ public class FuncionarioService {
 
 
             boolean existe = diasLiberadosRepository
-                    .findByDataAndEspecialidade(data, especialidade)
+                    .findByDataAndClinica(data, clinica)
                     .isPresent();
 
             if (!existe) {
                 DiasLiberados dia = new DiasLiberados();
                 dia.setData(data);
-                dia.setEspecialidade(especialidade);
+                dia.setClinica(clinica);
 
                 diasLiberadosRepository.save(dia);
             }
         }
+    }
+
+    public List<String> buscarDiasLiberadosClinica(String clinica, Integer mes, Integer ano){
+        EnumClinica cli = EnumClinica.valueOf(clinica);
+
+        LocalDate inicio = LocalDate.of(ano, mes, 1);
+        LocalDate fim = inicio.withDayOfMonth(inicio.lengthOfMonth());
+
+        return diasLiberadosRepository
+                .findByClinicaAndDataBetween(cli, inicio, fim)
+                .stream()
+                .map(d -> d.getData().toString()) // yyyy-MM-dd
+                .toList();
     }
 }

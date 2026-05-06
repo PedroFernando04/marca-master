@@ -1,5 +1,6 @@
 package citec.marca.entities.tabelasAuxiliares;
 
+import citec.marca.entities.enums.EnumClinica;
 import citec.marca.entities.enums.EnumEspecialidades;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,6 +24,6 @@ public class DiasLiberados {
     private LocalDate data;
 
     @Enumerated(EnumType.STRING)
-    private EnumEspecialidades especialidade;
+    private EnumClinica clinica;
 
 }

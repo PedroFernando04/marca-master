@@ -5,7 +5,7 @@ import java.util.List;
 public class LiberarDiaRequest {
 
     private List<String> dias;
-    private String especialidade;
+    private String clinica;
 
     public List<String> getDias() {
         return dias;
@@ -15,11 +15,11 @@ public class LiberarDiaRequest {
         this.dias = dias;
     }
 
-    public String getEspecialidade() {
-        return especialidade;
+    public String getClinica() {
+        return clinica;
     }
 
-    public void setEspecialidade(String especialidade) {
-        this.especialidade = especialidade;
+    public void setClinica(String clinica) {
+        this.clinica = clinica;
     }
 }
