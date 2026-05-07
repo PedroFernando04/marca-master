@@ -82,36 +82,77 @@ export default function Agendar() {
 
                 {/* AGENDA */}
                 <div className="mt-8">
-                    <div>
-                        
+
+                    {/* FILTROS */}
+                    <div className="bg-white/80 backdrop-blur-md border border-white/40 shadow-lg rounded-2xl p-6 mb-8">
+
+                        <div className="flex items-center gap-2 mb-5">
+                            <div className="w-2 h-8 rounded-full bg-gradient-to-b from-blue-500 to-violet-700"></div>
+
+                            <div>
+                                <h2 className="text-xl font-semibold text-gray-800">
+                                    Filtrar Agenda
+                                </h2>
+
+                                <p className="text-sm text-gray-500">
+                                    Escolha a clínica e a especialidade desejada
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            {/* CLÍNICA */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Clínica
+                                </label>
+
+                                <Select
+                                    tipo={"clinica"}
+                                    value={clinica}
+                                    onChange={setClinica}
+                                >
+                                    <option value="">Selecione a clínica</option>
+
+                                    {clinicas.map(c => (
+                                        <option key={c.codigo} value={c.codigo}>
+                                            {c.descricao}
+                                        </option>
+                                    ))}
+                                </Select>
+
+                                {clinica && (
+                                    <p className="text-sm text-gray-500 mt-2 pl-1">
+                                        📍 {clinicas.find(c => c.codigo === clinica)?.endereco}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* ESPECIALIDADE */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Especialidade
+                                </label>
+
+                                <Select
+                                    tipo={"especialidade"}
+                                    value={especialidade}
+                                    onChange={setEspecialidade}
+                                >
+                                    <option value="">Selecione a especialidade</option>
+
+                                    {especialidades.map(e => (
+                                        <option key={e.codigo} value={e.codigo}>
+                                            {e.descricao}
+                                        </option>
+                                    ))}
+                                </Select>
+                            </div>
+
+                        </div>
+
                     </div>
-                    <Select tipo={"clinica"} value={clinica} onChange={setClinica}>
-                        <option value="">Selecione a clínica</option>
-
-                        {clinicas.map(c => (
-                            <option key={c.codigo} value={c.codigo}>
-                                {c.descricao}
-                            </option>
-                        ))}
-                    </Select>
-                    
-                    {clinica && (
-                        <p className="text-sm text-gray-500 mt-2">
-                            {
-                                clinicas.find(c => c.codigo === clinica)?.endereco
-                            }
-                        </p>
-                    )}
-
-                    <Select tipo={"especialidade"} value={especialidade} onChange={setEspecialidade}>
-                        <option value="">Selecione a especialidade</option>
-
-                        {especialidades.map(e => (
-                            <option key={e.codigo} value={e.codigo}>
-                                {e.descricao}
-                            </option>
-                        ))}
-                    </Select>
 
                     {(!clinica || !especialidade) && (
                         <div className="text-center mt-10 text-gray-500">

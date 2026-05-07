@@ -49,7 +49,6 @@ export default function Agenda({ ajuste, tipoAgenda, clinica, especialidade }) {
         setAno(novoAno);
     }
 
-    // 🔵 AGORA É CLARO: ISSO SÃO DIAS LIBERADOS
     const [diasLiberados, setDiasLiberados] = useState([]);
 
     const [modalAberto, setModalAberto] = useState(false);
