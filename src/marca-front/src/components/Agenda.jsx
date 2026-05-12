@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Button from "./Button";
+import UsuarioLogado from "../config/UsuarioLogado";
 
 function gerarCalendario(ano, mes) {
     const primeiroDia = new Date(ano, mes, 1).getDay();
@@ -54,8 +55,10 @@ export default function Agenda({ ajuste, tipoAgenda, clinica, especialidade }) {
     const [modalAberto, setModalAberto] = useState(false);
     const [diaSelecionado, setDiaSelecionado] = useState(null);
 
+    const usuario = UsuarioLogado().usuario;
+
     function confirmarAgendamento() {
-        alert(`Agendamento confirmado para o dia ${diaSelecionado} de ${mesesAno[mes]} de ${ano}!`);
+        alert(`fulan:${usuario?.id} espec: ${especialidade} cli: ${clinica}Agendamento confirmado para o dia ${diaSelecionado} de ${mesesAno[mes]} de ${ano}!`);
         setModalAberto(false);
     }
 

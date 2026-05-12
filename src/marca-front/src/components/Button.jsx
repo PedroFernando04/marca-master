@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function Button({children, cor, ajuste = "", rota, onClick, type}) {
+export default function Button({children, cor, ajuste = "", rota, onClick, type, especialidadeGeral}) {
 
     const base = "inline-flex items-center justify-center rounded-lg mx-5 px-4 py-2";
 
@@ -14,6 +14,7 @@ export default function Button({children, cor, ajuste = "", rota, onClick, type}
     if (rota){
         return (
             <Link to={rota} 
+                  state={{clinicoGeral: especialidadeGeral}}
                   className={`${base} ${ajuste} ${estilos[cor]}`}>
                 {children}
             </Link>

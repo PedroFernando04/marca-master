@@ -1,6 +1,5 @@
 package citec.marca.controllers;
 
-import citec.marca.entities.enums.EnumEspecialidades;
 import citec.marca.services.FuncionarioService;
 import citec.marca.services.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +27,8 @@ public class DiasLiberadosController {
             @RequestParam Integer mes,
             @RequestParam Integer ano
     ) {
-
-        System.out.println(clinica);
-        System.out.println(especialidade);
-        System.out.println(mes);
-        System.out.println(ano);
-
         List<String> dias = pacienteService.buscarDiasLiberadosEspecialidade(clinica, especialidade, mes, ano);
 
-        System.out.println(dias);
         return ResponseEntity.ok(dias);
     }
 

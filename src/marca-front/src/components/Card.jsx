@@ -7,14 +7,16 @@ export default function Card({tipo}){
             h1: "Clínico Geral",
             p: "Para consultas de rotina, check-ups e sintomas gerais.",
             requerimento: "Não requer encaminhamento",
-            rota: "/agendar"
+            rota: "/agendar",
+            geral: true
         },
 
         especialista:{
             h1: "Especialista",
             p: "Cardiologia, Dermatologia, Pediatria, etc.",
             requerimento: "Requer encaminhamento médico",
-            rota: "/agendarEspecialista"
+            rota: "/agendar",
+            geral: false
         }
     }
 
@@ -34,7 +36,7 @@ export default function Card({tipo}){
                 
             </div>
 
-            <Button rota = {`${tipoCard[tipo].rota}`} cor = "vazado" ajuste="mt-8" >Selecionar</Button>
+            <Button rota = {`${tipoCard[tipo].rota}`} cor = "vazado" ajuste="mt-8" especialidadeGeral={tipoCard[tipo].geral}>Selecionar</Button>
         </div>
     );
 }

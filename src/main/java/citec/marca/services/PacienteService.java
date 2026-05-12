@@ -57,27 +57,15 @@ public class PacienteService {
         EnumEspecialidades esp = EnumEspecialidades.valueOf(especialidade);
         EnumClinica cli =  EnumClinica.valueOf(clinica);
 
-        System.out.println("EPSECIALIDADE: " + esp);
-        System.out.println("CLINICA: " + cli);
-
         LocalDate inicio = LocalDate.of(ano, mes, 1);
         LocalDate fim = inicio.withDayOfMonth(inicio.lengthOfMonth());
-
-        System.out.println("ANO: " + ano);
-        System.out.println("MES: " + mes);
 
         List<DiasLiberados> diasLiberados = diasLiberadosRepository.findByClinicaAndDataBetween(cli, inicio, fim);
         List<DiaConsultorio> diasEspecialidadeAtua = diaConsultorioRepository.findByClinicaAndEspecialidade(cli, esp);
 
-        System.out.println("DIASLIBERADOS: " + diasLiberados);
-        System.out.println("DIASESPECIALIDADEATUA: " + diasEspecialidadeAtua);
-
-
         Set<EnumDiasSemana> diasSemanaEspecialidade = diasEspecialidadeAtua.stream()
                 .map(DiaConsultorio::getDiaSemana)
                 .collect(Collectors.toSet());
-
-        System.out.println("DIASSEMANAeSPECIALIDADE: " + diasSemanaEspecialidade);
 
         return diasLiberados.stream()
                 .map(DiasLiberados::getData)

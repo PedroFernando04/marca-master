@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function Select({tipo, ajuste, value, onChange}){
+export default function Select({tipo, ajuste, value, onChange, opcoesFiltradas}){
     const linkPadrao = "http://localhost:8080/api/enum";
 
     const config = {
@@ -45,19 +45,23 @@ export default function Select({tipo, ajuste, value, onChange}){
     const [opcoes, setOpcao] = useState([]);
 
     useEffect(() => {
-            async function buscarOpcoes() {
-                try {
-                    const response = await fetch(linkPadrao + cfg.link);
-                    const data = await response.json();
-                    setOpcao(data);
-                } catch (err) {
-                    console.error("Erro ao buscar opções:", err);
-                }
+        async function buscarOpcoes() {
+            if(opcoesFiltradas){
+            setOpcao(opcoesFiltradas);
+            return;
             }
-    
-            buscarOpcoes();
-        }, [cfg.link]);
+            try {
+                const response = await fetch(linkPadrao + cfg.link);
+                const data = await response.json();
+                setOpcao(data);
+            } catch (err) {
+                console.error("Erro ao buscar opções:", err);
+            }
+        }
 
+        buscarOpcoes();
+
+    }, [cfg.link, opcoesFiltradas]);
 
     return(
         <select
@@ -65,7 +69,7 @@ export default function Select({tipo, ajuste, value, onChange}){
             onChange={(e) => {
                 onChange && onChange(e.target.value);
             }}
-            className={`${ajuste} border border-gray-300 rounded-xl p-2 shadow-sm `}
+            className={`${ajuste} border border-gray-300 rounded-xl p-2 shadow-sm  cursor-pointer`}
         >
             <option value="">{cfg.texto}</option>
 

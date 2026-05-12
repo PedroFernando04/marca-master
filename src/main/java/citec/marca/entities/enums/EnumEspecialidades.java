@@ -9,7 +9,7 @@ public enum EnumEspecialidades {
     PSIQ ("Psiquiatria"),
     GO ("Ginecologia e Obstetrícia"),
     INFECTO ("Infecto"),
-    GASTRO ("gastroenterologia "),
+    GASTRO ("Gastroenterologia "),
     ENDOCRINO ("Endócrino"),
     ONCO ("Oncologia"),
     HEMATO ("Hematologia"),
@@ -21,7 +21,7 @@ public enum EnumEspecialidades {
     OTORRINO ("Otorrinolaringologia"),
     ORTOP ("Ortopedia"),
     REUMATO ("Reumatologia"),
-    PROCTO ("Procotologia"),
+    PROCTO ("Proctologia"),
     MASTO ("Mastologia"),
     HOMEOP ("Homeopatia"),
     PNEUMOLOGIA ("Pneumologia");

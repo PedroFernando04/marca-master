@@ -1,6 +1,7 @@
 package citec.marca.entities.tabelasAuxiliares;
 
 import citec.marca.entities.enums.EnumClinica;
+import citec.marca.entities.enums.EnumEspecialidades;
 import citec.marca.entities.enums.EnumTipoAgendamento;
 import citec.marca.entities.tabelasPrincipais.Paciente;
 import jakarta.persistence.*;
@@ -32,6 +33,10 @@ public class Agendamento {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EnumTipoAgendamento tipo;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EnumEspecialidades especialidade;
 
     @Column
     private String encaminhamentoMedicoPath;

@@ -3,14 +3,24 @@ import Agenda from "../components/Agenda";
 import Button from "../components/Button";
 import Select from "../components/Select";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 export default function Agendar() {
-
     const [clinica, setClinica] = useState("");
     const [especialidade, setEspecialidade] = useState("");
 
     const [clinicas, setClinicas] = useState([]);
     const [especialidades, setEspecialidades] = useState([]);
+
+    const location = useLocation();
+    const somenteClinico = location.state?.clinicoGeral;
+    const especialidadesFiltradas = somenteClinico
+    ? especialidades.filter(
+          e => e.codigo === "GERAL"
+      )
+    : especialidades.filter(
+          e => e.codigo !== "GERAL"
+      );
 
     useEffect(() => {
         async function carregarEnums() {
@@ -33,6 +43,25 @@ export default function Agendar() {
 
         carregarEnums();
     }, []);
+
+    useEffect(() => {
+    async function apenasClinico (){
+        try{
+            if(somenteClinico){
+                setEspecialidade("GERAL");
+            }
+        } catch (erro) {
+                console.error("Erro ao carregar enums:", erro);
+            }
+    }
+        apenasClinico();
+    }, [somenteClinico]);
+
+    const [arquivo, setArquivo] = useState(null);
+
+    function handleFileChange(e){
+        setArquivo(e.target.files[0]);
+    }
 
     return (
         <div className="min-h-screen">
@@ -83,28 +112,15 @@ export default function Agendar() {
                 {/* AGENDA */}
                 <div className="mt-8">
 
-                    {/* FILTROS */}
-                    <div className="bg-white/80 backdrop-blur-md border border-white/40 shadow-lg rounded-2xl p-6 mb-8">
+                    {/* CAMPOS */}
+                    <div className="flex flex-col gap-6 mb-5">
 
-                        <div className="flex items-center gap-2 mb-5">
-                            <div className="w-2 h-8 rounded-full bg-gradient-to-b from-blue-500 to-violet-700"></div>
-
-                            <div>
-                                <h2 className="text-xl font-semibold text-gray-800">
-                                    Filtrar Agenda
-                                </h2>
-
-                                <p className="text-sm text-gray-500">
-                                    Escolha a clínica e a especialidade desejada
-                                </p>
-                            </div>
-                        </div>
-
+                        {/* LINHA DOS SELECTS */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                             {/* CLÍNICA */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <div className="flex flex-col">
+                                <label className="text-sm font-semibold text-gray-700 mb-2">
                                     Clínica
                                 </label>
 
@@ -122,16 +138,18 @@ export default function Agendar() {
                                     ))}
                                 </Select>
 
-                                {clinica && (
-                                    <p className="text-sm text-gray-500 mt-2 pl-1">
-                                        📍 {clinicas.find(c => c.codigo === clinica)?.endereco}
-                                    </p>
-                                )}
+                                <div className="h-6 mt-2">
+                                    {clinica && (
+                                        <p className="text-sm text-gray-500">
+                                            📍 {clinicas.find(c => c.codigo === clinica)?.endereco}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
 
                             {/* ESPECIALIDADE */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <div className="flex flex-col">
+                                <label className="text-sm font-semibold text-gray-700 mb-2">
                                     Especialidade
                                 </label>
 
@@ -139,10 +157,13 @@ export default function Agendar() {
                                     tipo={"especialidade"}
                                     value={especialidade}
                                     onChange={setEspecialidade}
+                                    opcoesFiltradas={especialidadesFiltradas}
                                 >
-                                    <option value="">Selecione a especialidade</option>
+                                    {!somenteClinico && (
+                                        <option value="">Selecione a especialidade</option>
+                                    )}
 
-                                    {especialidades.map(e => (
+                                    {especialidadesFiltradas.map(e => (
                                         <option key={e.codigo} value={e.codigo}>
                                             {e.descricao}
                                         </option>
@@ -151,6 +172,58 @@ export default function Agendar() {
                             </div>
 
                         </div>
+
+                        {/* UPLOAD */}
+                        {especialidade !== "GERAL" && (
+                            <div className="flex flex-col">
+
+                                <label className="text-sm font-semibold text-gray-700 mb-2">
+                                    Encaminhamento Médico
+                                </label>
+
+                                <label className="cursor-pointer">
+
+                                    <div className="w-full border-2 border-dashed border-blue-300 
+                                                    rounded-2xl p-6
+                                                    hover:bg-blue-50 transition-all duration-200
+                                                    bg-gradient-to-br from-white to-blue-50/40">
+
+                                        <div className="flex flex-col items-center justify-center text-center">
+
+                                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr 
+                                                            from-blue-500 to-violet-700
+                                                            flex items-center justify-center mb-4">
+
+                                                <span className="text-white text-2xl">
+                                                    📄
+                                                </span>
+
+                                            </div>
+
+                                            <span className="text-blue-700 font-semibold text-base">
+                                                {arquivo
+                                                    ? arquivo.name
+                                                    : "Clique para enviar seu encaminhamento"}
+                                            </span>
+
+                                            <span className="text-sm text-gray-500 mt-1">
+                                                PDF, JPG ou PNG
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        onChange={handleFileChange}
+                                    />
+
+                                </label>
+
+                            </div>
+                        )}
 
                     </div>
 
