@@ -43,10 +43,19 @@ public class Agendamento {
 
     public Agendamento() {}
 
-    public Agendamento(EnumClinica clinica, LocalDate data, EnumTipoAgendamento tipo, String encaminhamentoMedicoPath) {
+    public Agendamento(
+            Paciente paciente,
+            EnumClinica clinica,
+            LocalDate data,
+            EnumTipoAgendamento tipo,
+            EnumEspecialidades especialidade,
+            String encaminhamentoMedicoPath
+    ) {
+        this.paciente = paciente;
         this.clinica = clinica;
         this.data = data;
         this.tipo = tipo;
+        this.especialidade = especialidade;
         this.encaminhamentoMedicoPath = encaminhamentoMedicoPath;
     }
 }

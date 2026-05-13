@@ -227,17 +227,21 @@ export default function Agendar() {
 
                     </div>
 
-                    {(!clinica || !especialidade) && (
-                        <div className="text-center mt-10 text-gray-500">
-                            Selecione a clínica e a especialidade para visualizar os dias disponíveis
+                    {(!clinica || !especialidade || !arquivo) && (
+                        <div className="text-lg text-center mt-10 text-gray-500">
+                            Selecione a clínica, especialidade e envie seu encaminhamento para visualizar os dias disponíveis
                         </div>
                     )}
 
-                    {clinica && especialidade && (
+                    {clinica &&
+                    especialidade &&
+                    arquivo && 
+                    (
                         <Agenda 
-                            tipoAgenda="agendarConsulta" 
+                            tipoAgenda="agendarConsulta"
                             clinica={clinica}
                             especialidade={especialidade}
+                            arquivo={arquivo}
                         />
                     )}
                 </div>

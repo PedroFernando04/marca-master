@@ -1,7 +1,7 @@
 package citec.marca.entities.enums;
 
 public enum EnumTipoAgendamento {
-    PRIMEIRO ("Primeira Consulta"),
+    PRIMEIRA_CONSULTA ("Primeira Consulta"),
     RETORNO ("Retorno");
 
     private String descricao;

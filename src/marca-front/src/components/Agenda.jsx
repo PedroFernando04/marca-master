@@ -19,7 +19,13 @@ function gerarCalendario(ano, mes) {
     return dias;
 }
 
-export default function Agenda({ ajuste, tipoAgenda, clinica, especialidade }) {
+export default function Agenda({
+    ajuste,
+    tipoAgenda,
+    clinica,
+    especialidade,
+    arquivo
+}){
     const hoje = new Date();
     const [mes, setMes] = useState(hoje.getMonth());
     const [ano, setAno] = useState(hoje.getFullYear());
@@ -57,9 +63,76 @@ export default function Agenda({ ajuste, tipoAgenda, clinica, especialidade }) {
 
     const usuario = UsuarioLogado().usuario;
 
-    function confirmarAgendamento() {
-        alert(`fulan:${usuario?.id} espec: ${especialidade} cli: ${clinica}Agendamento confirmado para o dia ${diaSelecionado} de ${mesesAno[mes]} de ${ano}!`);
-        setModalAberto(false);
+    async function confirmarAgendamento() {
+        try {
+
+            const dataConsulta =
+                `${ano}-${String(mes + 1).padStart(2, "0")}-${String(diaSelecionado).padStart(2, "0")}`;
+
+            const formData = new FormData();
+
+            formData.append(
+                "pacienteId",
+                String(usuario?.id)
+            );
+
+            formData.append(
+                "clinica",
+                clinica
+            );
+
+            formData.append(
+                "especialidade",
+                especialidade
+            );
+
+            formData.append(
+                "data",
+                dataConsulta
+            );
+
+            if (arquivo) {
+
+                formData.append(
+                    "arquivo",
+                    arquivo
+                );
+            }
+
+            const response = await fetch(
+                "http://localhost:8080/api/paciente/agendar",
+                {
+                    method: "POST",
+                    credentials: "include",
+                    body: formData
+                }
+            );
+
+            if (!response.ok) {
+
+                const textoErro = await response.text();
+
+                console.error(textoErro);
+
+                throw new Error(textoErro);
+            }
+
+            alert("Consulta agendada com sucesso!");
+
+            setModalAberto(false);
+
+            setDiasLiberados(prev =>
+                prev.filter(
+                    d => d !== dataConsulta
+                )
+            );
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            alert(erro.message);
+        }
     }
 
     function toggleDia(dia) {
