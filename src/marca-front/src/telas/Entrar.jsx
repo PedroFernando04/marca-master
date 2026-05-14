@@ -57,12 +57,25 @@ export default function Entrar(){
             });
 
             if(api.status === 200){
-                localStorage.setItem("logado", "true");
-                navigate("/home");
+
+                // força o navegador a reconhecer a sessão
+                const validarSessao = await fetch(
+                    "http://localhost:8080/api/usuarios/usuarioLogado",
+                    {
+                        credentials: "include"
+                    }
+                );
+
+                if(validarSessao.ok){
+                    navigate("/home");
+                } else {
+                    alert("Erro ao validar sessão");
+                }
+
             } else {
                 alert("Erro! \nLogin ou senha incorreto");
             }
-            
+
         } catch (err){
             console.error(err);
             alert("Erro na requisição");

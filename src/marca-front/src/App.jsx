@@ -24,7 +24,10 @@ function App() {
       <Route 
         path = "/home" 
         element={
-          <PrivateRoute usuario={usuario}>
+          <PrivateRoute
+              usuario={usuario}
+              carregando={carregando}
+          >
             <Home />
           </PrivateRoute>
         }
@@ -33,7 +36,10 @@ function App() {
       <Route 
         path = "/agendar" 
         element={
-          <PrivateRoute usuario={usuario}>
+          <PrivateRoute
+              usuario={usuario}
+              carregando={carregando}
+          >
             <Agendar />
           </PrivateRoute> 
         }

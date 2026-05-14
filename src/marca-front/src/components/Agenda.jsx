@@ -216,7 +216,6 @@ export default function Agenda({
 
                 const data = await response.json();
 
-                // 🔵 backend retorna DIAS LIBERADOS
                 setDiasLiberados(data);
 
             } catch (err) {
@@ -257,9 +256,16 @@ export default function Agenda({
 
                     const chave = `${ano}-${String(mes + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
 
-                    // 🔵 REGRA PRINCIPAL:
                     const liberado = diasLiberados.includes(chave);
-                    const ocupado = !liberado || fimDeSemana;
+
+                    const hoje = new Date();
+                    hoje.setHours(0, 0, 0, 0);
+
+                    const dataAtual = new Date(ano, mes, dia);
+
+                    const passado = dataAtual < hoje;
+
+                    const ocupado = !liberado || fimDeSemana || passado;
 
                     return (
                         <div
@@ -267,7 +273,7 @@ export default function Agenda({
                             onClick={() => handleClickDia(dia, ocupado)}
                             className={`
                                 h-16 flex items-center justify-center rounded-md border
-                                ${fimDeSemana ? "cursor-not-allowed bg-gray-300" : "cursor-pointer"}
+                                ${(fimDeSemana || passado) ? "cursor-not-allowed bg-gray-300" : "cursor-pointer"}
                                 ${ocupado
                                     ? "bg-gray-200 text-gray-500"
                                     : "bg-blue-600 text-white hover:bg-blue-500"

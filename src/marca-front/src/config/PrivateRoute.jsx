@@ -1,6 +1,13 @@
-import {Navigate} from "react-router-dom"
+export default function PrivateRoute ({
+    children,
+    usuario,
+    carregando
+}){
 
-export default function PrivateRoute ({children, usuario}){
+    if(carregando){
+        return <p>Carregando...</p>;
+    }
+
     if(!usuario){
         return <Navigate to="/recepcao" />;
     }
