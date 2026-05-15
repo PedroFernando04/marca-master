@@ -4,17 +4,9 @@ import { Routes, Route } from "react-router-dom";
 import Entrar from "./telas/Entrar";
 import Home from "./telas/Home";
 import Agendar from "./telas/Agendar";
-import UsuarioLogado from "./config/UsuarioLogado";
 import PrivateRoute from "./config/PrivateRoute";
 
 function App() {
-
-  const {usuario, carregando} = UsuarioLogado();
-
-  if (carregando) {
-    return <p>Carregando...</p>;
-  }
-
   return (
     <Routes>
       <Route path = "/recepcao" element={<Recepcao />} />
@@ -24,10 +16,7 @@ function App() {
       <Route 
         path = "/home" 
         element={
-          <PrivateRoute
-              usuario={usuario}
-              carregando={carregando}
-          >
+          <PrivateRoute>
             <Home />
           </PrivateRoute>
         }
@@ -36,10 +25,7 @@ function App() {
       <Route 
         path = "/agendar" 
         element={
-          <PrivateRoute
-              usuario={usuario}
-              carregando={carregando}
-          >
+          <PrivateRoute>
             <Agendar />
           </PrivateRoute> 
         }

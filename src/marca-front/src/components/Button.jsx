@@ -2,7 +2,12 @@ import { Link } from "react-router-dom";
 
 export default function Button({children, cor, ajuste = "", rota, onClick, type, especialidadeGeral}) {
 
-    const base = "inline-flex items-center justify-center rounded-lg mx-5 px-4 py-2";
+    const base = `
+        inline-flex items-center justify-center
+        rounded-lg mx-5 px-4 py-2
+        transition duration-200
+        shadow-md hover:shadow-lg
+    `;
 
     const estilos = {
         fundo: "text-white bg-gradient-to-tr from-blue-500 to-violet-800 hover:opacity-90",

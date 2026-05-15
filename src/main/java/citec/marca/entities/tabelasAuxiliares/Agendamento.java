@@ -1,8 +1,6 @@
 package citec.marca.entities.tabelasAuxiliares;
 
-import citec.marca.entities.enums.EnumClinica;
-import citec.marca.entities.enums.EnumEspecialidades;
-import citec.marca.entities.enums.EnumTipoAgendamento;
+import citec.marca.entities.enums.*;
 import citec.marca.entities.tabelasPrincipais.Paciente;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -41,6 +39,17 @@ public class Agendamento {
     @Column
     private String encaminhamentoMedicoPath;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EnumStatusAgendamento statusAgendamento;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EnumStatusEncaminhamento statusEncaminhamento;
+
+    @Column
+    private String descricaoEncaminhamento;
+
     public Agendamento() {}
 
     public Agendamento(
@@ -49,7 +58,10 @@ public class Agendamento {
             LocalDate data,
             EnumTipoAgendamento tipo,
             EnumEspecialidades especialidade,
-            String encaminhamentoMedicoPath
+            String encaminhamentoMedicoPath,
+            EnumStatusAgendamento statusAgendamento,
+            EnumStatusEncaminhamento statusEncaminhamento,
+            String descricaoEncaminhamento
     ) {
         this.paciente = paciente;
         this.clinica = clinica;
@@ -57,5 +69,8 @@ public class Agendamento {
         this.tipo = tipo;
         this.especialidade = especialidade;
         this.encaminhamentoMedicoPath = encaminhamentoMedicoPath;
+        this.statusAgendamento = statusAgendamento;
+        this.statusEncaminhamento = statusEncaminhamento;
+        this.descricaoEncaminhamento = descricaoEncaminhamento;
     }
 }

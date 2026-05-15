@@ -27,16 +27,11 @@ public class PacienteController {
     }
 
     @PostMapping("/agendar")
-    public ResponseEntity<String> agendarConsulta(
-            @ModelAttribute AgendarConsultaRequest request
-    ) throws IOException {
+    public ResponseEntity<String> agendarConsulta(@ModelAttribute AgendarConsultaRequest request) throws IOException {
 
-        agendamentoService.agendarConsulta(
-                request
-        );
+        agendamentoService.agendarConsulta(request);
 
-        return ResponseEntity.ok(
-                "Consulta agendada com sucesso!"
+        return ResponseEntity.ok("Consulta agendada com sucesso!"
         );
     }
 }

@@ -42,7 +42,7 @@ public class UsuarioController {
 
         Usuario usuarioEncontrado = usuarioService.getUsuarioByEmail(usuarioDigitado.getEmail());
 
-        if (usuarioDigitado == null || !usuarioService.verifyPassword(usuarioDigitado.getSenha(), usuarioEncontrado.getPassword())) {
+        if (usuarioEncontrado  == null || !usuarioService.verifyPassword(usuarioDigitado.getSenha(), usuarioEncontrado.getPassword())) {
             return ResponseEntity.status(401).body(usuarioDigitado);
         }
 

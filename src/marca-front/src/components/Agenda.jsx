@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Button from "./Button";
 import UsuarioLogado from "../config/UsuarioLogado";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function gerarCalendario(ano, mes) {
     const primeiroDia = new Date(ano, mes, 1).getDay();
@@ -26,6 +27,8 @@ export default function Agenda({
     especialidade,
     arquivo
 }){
+    const navigate = useNavigate();
+
     const hoje = new Date();
     const [mes, setMes] = useState(hoje.getMonth());
     const [ano, setAno] = useState(hoje.getFullYear());
@@ -126,6 +129,8 @@ export default function Agenda({
                     d => d !== dataConsulta
                 )
             );
+
+            navigate("/home");
 
         } catch (erro) {
 

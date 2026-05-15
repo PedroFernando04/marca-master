@@ -58,7 +58,6 @@ export default function Entrar(){
 
             if(api.status === 200){
 
-                // força o navegador a reconhecer a sessão
                 const validarSessao = await fetch(
                     "http://localhost:8080/api/usuarios/usuarioLogado",
                     {

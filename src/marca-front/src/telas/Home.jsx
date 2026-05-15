@@ -4,7 +4,7 @@ import SlideButton from "../components/SlideButton";
 import CardConsulta from "../components/CardConsulta";
 import Tabela from "../components/Tabela";
 import Agenda from "../components/Agenda";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UsuarioLogado from "../config/UsuarioLogado";
 
 export default function Home(){
@@ -12,6 +12,78 @@ export default function Home(){
     const [aba, setAba] = useState ("agendamento");
 
     const usuario = UsuarioLogado().usuario;
+
+    const [agendamentos, setAgendamentos] = useState([]);
+
+    const [pagina, setPagina] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(0);
+
+    const [especialidade, setEspecialidade] = useState("");
+
+    const [statusEncaminhamento, setStatusEncaminhamento] =useState("");
+
+    useEffect(() => {
+
+        if(usuario?.tipo !== "Funcionario"){
+            return;
+        }
+
+        let url = `http://localhost:8080/api/agendamento?pagina=${pagina}`;
+
+        if(especialidade !== ""){
+            url += `&especialidade=${especialidade}`;
+        }
+
+        if(statusEncaminhamento !== ""){
+            url +=
+            `&statusEncaminhamento=${statusEncaminhamento}`;
+        }
+
+        fetch(url, {
+            credentials: "include"
+        })
+            .then(response => response.json())
+            .then(data => {
+
+                setAgendamentos(data.content);
+                setTotalPaginas(data.totalPages);
+
+            })
+            .catch(error => console.log(error));
+
+    }, [
+        pagina,
+        especialidade,
+        statusEncaminhamento,
+        usuario
+    ]);
+
+    const [especialidades, setEspecialidades] = useState([]);
+
+    const [statusEncaminhamentos, setStatusEncaminhamentos] = useState([]);
+
+    useEffect(() => {
+        fetch(
+            "http://localhost:8080/api/enum/especialidades",
+            {
+                credentials: "include"
+            }
+        )
+            .then(response => response.json())
+            .then(data => setEspecialidades(data))
+            .catch(error => console.log(error));
+
+        fetch(
+            "http://localhost:8080/api/enum/statusEncaminhamento",
+            {
+                credentials: "include"
+            }
+        )
+            .then(response => response.json())
+            .then(data => setStatusEncaminhamentos(data))
+            .catch(error => console.log(error));
+
+    }, []);
 
     return(
         <div className="min-h-screen">
@@ -52,8 +124,20 @@ export default function Home(){
                     {aba === "agendamento" && (
                         <div>
     
-                                <div className="flex justify-center">
-                                    <Tabela tipo = "encaminhamento"></Tabela>
+                                <div className="flex justify-center mb-8">
+                                    <Tabela
+                                        agendamentos={agendamentos}
+                                        setAgendamentos={setAgendamentos}
+                                        pagina={pagina}
+                                        setPagina={setPagina}
+                                        totalPaginas={totalPaginas}
+                                        especialidade={especialidade}
+                                        setEspecialidade={setEspecialidade}
+                                        statusEncaminhamento={statusEncaminhamento}
+                                        setStatusEncaminhamento={setStatusEncaminhamento}
+                                        especialidades={especialidades}
+                                        statusEncaminhamentos={statusEncaminhamentos}
+                                    />
                                 </div>
                         </div>
                     )}

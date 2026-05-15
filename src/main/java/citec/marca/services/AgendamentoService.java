@@ -1,9 +1,7 @@
 package citec.marca.services;
 
 import citec.marca.dtos.requests.AgendarConsultaRequest;
-import citec.marca.entities.enums.EnumClinica;
-import citec.marca.entities.enums.EnumEspecialidades;
-import citec.marca.entities.enums.EnumTipoAgendamento;
+import citec.marca.entities.enums.*;
 import citec.marca.entities.tabelasAuxiliares.Agendamento;
 import citec.marca.entities.tabelasPrincipais.Paciente;
 import citec.marca.repositories.tabelasAuxiliares.AgendamentoRepository;
@@ -28,9 +26,7 @@ public class AgendamentoService {
     @Autowired
     private AgendamentoRepository agendamentoRepository;
 
-    public void agendarConsulta(
-            AgendarConsultaRequest request
-    ) throws IOException {
+    public void agendarConsulta(AgendarConsultaRequest request) throws IOException {
 
         Paciente paciente =
                 pacienteRepository.findById(
@@ -86,37 +82,17 @@ public class AgendamentoService {
                     caminhoCompleto.toString();
         }
 
-        Agendamento agendamento =
-                new Agendamento();
+        Agendamento agendamento = new Agendamento();
 
         agendamento.setPaciente(paciente);
+        agendamento.setClinica(EnumClinica.valueOf(request.getClinica()));
+        agendamento.setData(LocalDate.parse(request.getData()));
+        agendamento.setEspecialidade(especialidade);
+        agendamento.setTipo(tipo);
+        agendamento.setEncaminhamentoMedicoPath(caminhoArquivo);
+        agendamento.setStatusAgendamento(EnumStatusAgendamento.AGUARDANDO);
+        agendamento.setStatusEncaminhamento(EnumStatusEncaminhamento.AGUARDANDO);
 
-        agendamento.setClinica(
-                EnumClinica.valueOf(
-                        request.getClinica()
-                )
-        );
-
-        agendamento.setData(
-                LocalDate.parse(
-                        request.getData()
-                )
-        );
-
-        agendamento.setEspecialidade(
-                especialidade
-        );
-
-        agendamento.setTipo(
-                tipo
-        );
-
-        agendamento.setEncaminhamentoMedicoPath(
-                caminhoArquivo
-        );
-
-        agendamentoRepository.save(
-                agendamento
-        );
+        agendamentoRepository.save(agendamento);
     }
 }

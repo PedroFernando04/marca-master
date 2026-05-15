@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -28,17 +27,10 @@ public class SecurityConfig {
                                 "/api/enum/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/entrar")
-                        .loginProcessingUrl("/login")
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/entrar?logoutSuccess=true")
-                        .deleteCookies("JSESSIONID")
-                )
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/entrar?loginRequired=true"))
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(401);
+                        })
                 )
                 .build();
     }

@@ -2,10 +2,11 @@ package citec.marca.controllers;
 
 import citec.marca.dtos.enums.ClinicaDTO;
 import citec.marca.dtos.enums.EspecialidadeDTO;
+import citec.marca.dtos.enums.StatusEncaminhamentoDTO;
 import citec.marca.dtos.enums.TipoFuncionarioDTO;
 import citec.marca.entities.enums.EnumClinica;
 import citec.marca.entities.enums.EnumEspecialidades;
-import citec.marca.entities.enums.EnumTipoAgendamento;
+import citec.marca.entities.enums.EnumStatusEncaminhamento;
 import citec.marca.entities.enums.EnumTipoFuncionario;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +41,23 @@ public class EnumController {
         return Arrays.stream(EnumTipoFuncionario.values())
                 .sorted(Comparator.comparing(EnumTipoFuncionario::getDescricao))
                 .map(e -> new TipoFuncionarioDTO(e.name(), e.getDescricao()))
+                .toList();
+    }
+
+    @GetMapping("/statusEncaminhamento")
+    public List<StatusEncaminhamentoDTO>
+    listarStatusEncaminhamento() {
+
+        return Arrays.stream(
+                        EnumStatusEncaminhamento.values()
+                )
+                .sorted(Comparator.comparing(
+                        EnumStatusEncaminhamento::getDescricao
+                ))
+                .map(e -> new StatusEncaminhamentoDTO(
+                        e.name(),
+                        e.getDescricao()
+                ))
                 .toList();
     }
 }
