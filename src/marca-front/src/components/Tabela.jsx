@@ -17,8 +17,9 @@ export default function Tabela({
 
     especialidades,
 
-    statusEncaminhamentos
+    statusEncaminhamentos,
 
+    atualizarStatus
 }) {
 
     function formatarData(data){
@@ -751,9 +752,17 @@ export default function Tabela({
                             <Button
                                 cor="excluir"
 
-                                onClick={() =>
-                                    atualizarEncaminhamento("REPROVADO")
-                                }
+                                onClick={async () => {
+
+                                    await atualizarEncaminhamento(
+                                        "REPROVADO"
+                                    );
+
+                                    await atualizarStatus(
+                                        agendamentoSelecionado.id,
+                                        "CANCELADO"
+                                    );
+                                }}
                             >
                                 Reprovar
                             </Button>
@@ -761,9 +770,17 @@ export default function Tabela({
                             <Button
                                 cor="fundo"
 
-                                onClick={() =>
-                                    atualizarEncaminhamento("APROVADO")
-                                }
+                                onClick={async () => {
+
+                                    await atualizarEncaminhamento(
+                                        "APROVADO"
+                                    );
+
+                                    await atualizarStatus(
+                                        agendamentoSelecionado.id,
+                                        "AGUARDANDO"
+                                    );
+                                }}
                             >
                                 Aprovar
                             </Button>

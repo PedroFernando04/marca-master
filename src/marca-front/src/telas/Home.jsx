@@ -85,6 +85,175 @@ export default function Home(){
 
     }, []);
 
+
+    useEffect(() => {
+
+        if(usuario?.tipo !== "Paciente"){
+            return;
+        }
+
+        fetch(
+            "http://localhost:8080/api/agendamento/paciente",
+            {
+                credentials: "include"
+            }
+        )
+            .then(response => response.json())
+            .then(data => setAgendamentos(data))
+            .catch(error => console.log(error));
+
+    }, [usuario]);
+
+    async function atualizarStatus(id, status){
+
+        try{
+
+            const response = await fetch(
+
+                `http://localhost:8080/api/agendamento/${id}/status`,
+
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    credentials: "include",
+
+                    body: JSON.stringify({
+                        status
+                    })
+                }
+            );
+
+            if(!response.ok){
+
+                const erro = await response.text();
+
+                throw new Error(erro);
+            }
+
+            setAgendamentos((prev) =>
+
+                prev.map((agendamento) => {
+
+                    if(agendamento.id === id){
+
+                        return {
+
+                            ...agendamento,
+
+                            statusAgendamento: status
+                        };
+                    }
+
+                    return agendamento;
+                })
+            );
+
+        } catch(error){
+
+            console.log(error);
+
+            alert(error.message);
+        }
+    }
+
+    async function confirmarConsulta(id){
+
+        try{
+
+            const response = await fetch(
+
+                `http://localhost:8080/api/agendamento/${id}/status`,
+
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    credentials: "include",
+
+                    body: JSON.stringify({
+                        status: "CONFIRMADO"
+                    })
+                }
+            );
+
+            if(!response.ok){
+
+                throw new Error(
+                    "Erro ao confirmar consulta"
+                );
+            }
+
+            setAgendamentos((prev) =>
+
+                prev.map((agendamento) => {
+
+                    if(agendamento.id === id){
+
+                        return {
+
+                            ...agendamento,
+
+                            statusAgendamento:
+                                "CONFIRMADO"
+                        };
+                    }
+
+                    return agendamento;
+                })
+            );
+
+        } catch(error){
+
+            console.log(error);
+
+            alert(error.message);
+        }
+    }
+
+    async function cancelarConsulta(id){
+
+        try{
+
+            const response = await fetch(
+
+                `http://localhost:8080/api/agendamento/${id}`,
+
+                {
+                    method: "DELETE",
+
+                    credentials: "include"
+                }
+            );
+
+            if(!response.ok){
+
+                throw new Error(
+                    "Erro ao cancelar consulta"
+                );
+            }
+
+            setAgendamentos((prev) =>
+
+                prev.filter(
+                    agendamento => agendamento.id !== id
+                )
+            );
+
+        } catch(error){
+
+            console.log(error);
+
+            alert(error.message);
+        }
+    }
+
     return(
         <div className="min-h-screen">
 
@@ -108,9 +277,27 @@ export default function Home(){
 
                     {aba === "consultas" && (
                         <div className="flex flex-col justify-center items-center">
-                            <h1 className="p-10"></h1>
+                            <h1 className="p-3"></h1>
 
-                            <CardConsulta></CardConsulta>
+                            <div className="w-full max-w-6xl flex flex-col gap-6">
+
+                                {agendamentos.map((agendamento) => (
+
+                                    <CardConsulta
+                                        key={agendamento.id}
+                                        agendamento={agendamento}
+                                        setAgendamentos={setAgendamentos}
+                                        especialidades={especialidades}
+                                        confirmarConsulta={confirmarConsulta}
+                                        cancelarConsulta={cancelarConsulta}
+                                    />
+
+                                ))}
+
+                            </div>
+
+                            <h1 className="p-6"></h1>
+
                         </div>
                     )}
 
@@ -137,6 +324,7 @@ export default function Home(){
                                         setStatusEncaminhamento={setStatusEncaminhamento}
                                         especialidades={especialidades}
                                         statusEncaminhamentos={statusEncaminhamentos}
+                                        atualizarStatus={atualizarStatus}
                                     />
                                 </div>
                         </div>

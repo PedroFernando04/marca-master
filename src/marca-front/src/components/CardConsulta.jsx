@@ -1,37 +1,624 @@
+import { useState } from "react";
 import Button from "./Button";
 
-export default function CardConsulta(){
-    return(
-        <div className="flex bg-white h-40 w-full max-w-6xl mx-auto rounded-lg shadow-lg items-center px-6">
-            
-            <div className="flex flex-col gap-3">
-                
-                <div className="flex items-center gap-4">
-                    
-                    <div className="bg-gradient-to-br from-blue-200 to-blue-100 w-16 h-16 rounded-full"></div>
+export default function CardConsulta({
 
-                    <div>
-                        <h1 className="font-bold text-lg">Dr. Cleiton</h1>
-                        <p className="text-sm text-blue-500 font-semibold">Clínico Geral</p>
+    agendamento,
+
+    especialidades,
+
+    confirmarConsulta,
+    cancelarConsulta
+
+}) {
+
+    const [modalAberto, setModalAberto] = useState(false);
+    const [modalCancelar, setModalCancelar] = useState(false);
+
+    function formatarData(data){
+
+        return new Date(data)
+            .toLocaleDateString(
+                "pt-BR",
+                {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric"
+                }
+            );
+    }
+
+    function descricaoEspecialidade(codigo){
+
+        const especialidadeEncontrada =
+            especialidades.find(
+                e => e.codigo === codigo
+            );
+
+        return especialidadeEncontrada
+            ? especialidadeEncontrada.descricao
+            : codigo;
+    }
+
+    const urlEncaminhamento =
+        `http://localhost:8080/api/agendamento/${agendamento.id}/encaminhamento/arquivo`;
+
+    function ehImagem(path){
+
+        if(!path) return false;
+
+        return (
+            path.endsWith(".png") ||
+            path.endsWith(".jpg") ||
+            path.endsWith(".jpeg") ||
+            path.endsWith(".webp")
+        );
+    }
+
+    function podeAlterarConsulta(){
+
+        const agora = new Date();
+
+        const dataConsulta =
+            new Date(agendamento.data);
+
+        const diferencaMs =
+            dataConsulta - agora;
+
+        const horas =
+            diferencaMs / (1000 * 60 * 60);
+
+        return (
+            horas >= 24 &&
+            agendamento.statusAgendamento !== "CANCELADO"
+        );
+    }
+
+    return(
+
+        <>
+            <div
+                className="
+                    bg-white
+                    w-full
+                    max-w-6xl
+
+                    rounded-3xl
+                    shadow-lg
+
+                    border border-gray-100
+
+                    p-6
+
+                    flex flex-col
+                    lg:flex-row
+
+                    gap-6
+                    items-center
+                "
+            >
+
+                <div className="flex-1 w-full ">
+
+                    <div className="flex items-center gap-4 ">
+
+                        <div
+                            className="
+                                bg-gradient-to-br
+                                from-blue-200
+                                to-violet-200
+
+                                w-16 h-16
+                                rounded-2xl
+                            "
+                        />
+
+                        <div>
+
+                            <h1 className="font-bold text-xl text-gray-800">
+
+                                {agendamento.clinica}
+
+                            </h1>
+
+                            <p className="text-sm text-violet-600 font-semibold">
+
+                                {descricaoEspecialidade(
+                                    agendamento.especialidade
+                                )}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        className="
+                            flex flex-wrap
+                            gap-4
+                            mt-5
+                            items-center
+                        "
+                    >
+
+                        <p className="text-sm text-gray-500">
+                            📅 {formatarData(agendamento.data)}
+                        </p>
+
+                        <div className="flex items-center gap-2">
+
+                            <span className="text-xs font-semibold text-gray-500">
+                                Consulta: 
+                            </span>
+
+                            <span
+                                className={`
+                                    px-3 py-1
+                                    rounded-full
+                                    text-xs
+                                    font-semibold
+
+                                    ${
+                                        agendamento.statusAgendamento === "CONFIRMADO"
+                                            ? "bg-green-100 text-green-700"
+
+                                        : agendamento.statusAgendamento === "CANCELADO"
+                                            ? "bg-red-100 text-red-700"
+
+                                        : "bg-yellow-100 text-yellow-700"
+                                    }
+                                `}
+                            >
+
+                                {agendamento.statusAgendamento}
+
+                            </span>
+
+                        </div>
+
+                        <div className="flex items-center gap-2">
+
+                            <span className="text-xs font-semibold text-gray-500">
+                                Encaminhamento: 
+                            </span>
+
+                            <span
+                                className={`
+                                    px-3 py-1
+                                    rounded-full
+                                    text-xs
+                                    font-semibold
+
+                                    ${
+                                        agendamento.statusEncaminhamento === "APROVADO"
+                                            ? "bg-green-100 text-green-700"
+
+                                        : agendamento.statusEncaminhamento === "REPROVADO"
+                                            ? "bg-red-100 text-red-700"
+
+                                        : "bg-yellow-100 text-yellow-700"
+                                    }
+                                `}
+                            >
+
+                                {agendamento.statusEncaminhamento}
+
+                            </span>
+
+                        </div>
+
                     </div>
 
                 </div>
 
-                <div className="flex items-center gap-4 text-gray-500 text-sm">
-                    <p>SEG, 27 de Out.</p>
-                    <p>08:00</p>
-                </div>
+                <button
+                    onClick={() =>
+                        window.open(
+                            urlEncaminhamento,
+                            "_blank"
+                        )
+                    }
 
-                <div className="text-green-600 font-semibold text-sm">
-                    Confirmada
+                    className="
+                        w-full
+                        lg:w-[220px]
+
+                        h-[140px]
+
+                        border
+                        rounded-2xl
+
+                        overflow-hidden
+
+                        bg-gray-50
+                        hover:opacity-90
+
+                        transition
+                        flex-shrink-0
+                    "
+                >
+
+                    {ehImagem(
+                        agendamento.encaminhamentoMedicoPath
+                    ) ? (
+
+                        <img
+                            src={urlEncaminhamento}
+
+                            alt="Encaminhamento"
+
+                            className="
+                                w-full
+                                h-full
+                                object-cover
+                            "
+                        />
+
+                    ) : (
+
+                        <div
+                            className="
+                                w-full
+                                h-full
+
+                                flex flex-col
+                                items-center
+                                justify-center
+
+                                text-gray-600
+                                gap-2
+                            "
+                        >
+
+                            <span className="text-4xl">
+                                📄
+                            </span>
+
+                            <span className="text-sm font-medium">
+                                Abrir PDF
+                            </span>
+
+                        </div>
+
+                    )}
+
+                </button>
+
+                <div
+                    className="
+                        flex
+                        lg:flex-col
+
+                        gap-3
+
+                        w-full
+                        lg:w-auto
+                    "
+                >
+
+                    <Button
+                        cor="vazado"
+
+                        ajuste="
+                            text-sm
+                            px-3
+                            py-1.5
+                            mx-0
+                            w-full
+                        "
+
+                        onClick={() =>
+                            setModalAberto(true)
+                        }
+                    >
+                        Detalhes
+                    </Button>
+
+                    <Button
+                        cor="fundo"
+                        ajuste="
+                            text-sm
+                            px-3
+                            py-1.5
+                            mx-0
+                            w-full
+                        "
+                        onClick={() =>confirmarConsulta( agendamento.id)}
+
+                        disabled={!podeAlterarConsulta()}
+                    >
+                        Confirmar
+                    </Button>
+
+                    <Button
+                        cor="excluir"
+                        ajuste="
+                            text-sm
+                            px-3
+                            py-1.5
+                            mx-0
+                            w-full
+                        "
+                        onClick={() => setModalCancelar(true)}
+                        disabled={!podeAlterarConsulta()}
+                    >
+                        Cancelar
+                    </Button>
+
                 </div>
 
             </div>
 
-            <div className="ml-auto">
-                <Button cor="excluir">Cancelar</Button>
-            </div>
+            {modalAberto && (
 
-        </div>
+                <div
+                    className="
+                        fixed inset-0 z-50
+                        bg-black/40
+
+                        flex items-center
+                        justify-center
+
+                        p-4
+                    "
+                >
+
+                    <div
+                        className="
+                            bg-white
+                            rounded-3xl
+
+                            w-full
+                            max-w-3xl
+
+                            p-8
+                        "
+                    >
+
+                        <div className="flex justify-between mb-6">
+
+                            <div>
+
+                                <h2 className="text-2xl font-bold">
+                                    Detalhes da Consulta
+                                </h2>
+
+                                <p className="text-gray-500">
+                                    Visualização do encaminhamento
+                                </p>
+
+                            </div>
+
+                            <button
+                                onClick={() =>
+                                    setModalAberto(false)
+                                }
+
+                                className="text-2xl"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+
+                            <div>
+
+                                <p className="text-gray-500 text-sm">
+                                    Clínica
+                                </p>
+
+                                <p className="font-semibold">
+                                    {agendamento.clinica}
+                                </p>
+
+                            </div>
+
+                            <div>
+
+                                <p className="text-gray-500 text-sm">
+                                    Especialidade
+                                </p>
+
+                                <p className="font-semibold">
+
+                                    {descricaoEspecialidade(
+                                        agendamento.especialidade
+                                    )}
+
+                                </p>
+
+                            </div>
+
+                            <div>
+
+                                <p className="text-gray-500 text-sm">
+                                    Data
+                                </p>
+
+                                <p className="font-semibold">
+
+                                    {formatarData(
+                                        agendamento.data
+                                    )}
+
+                                </p>
+
+                            </div>
+
+                            <div>
+
+                                <p className="text-gray-500 text-sm">
+                                    Status
+                                </p>
+
+                                <span
+                                    className={`
+                                        inline-block
+                                        mt-1
+                                        px-3 py-1
+                                        rounded-full
+                                        text-xs
+                                        font-semibold
+
+                                        ${
+                                            agendamento.statusAgendamento === "CONFIRMADO"
+                                                ? "bg-green-100 text-green-700"
+
+                                            : agendamento.statusAgendamento === "CANCELADO"
+                                                ? "bg-red-100 text-red-700"
+
+                                            : "bg-yellow-100 text-yellow-700"
+                                        }
+                                    `}
+                                >
+
+                                    {agendamento.statusAgendamento}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div className="mt-8">
+
+                            <p className="text-gray-500 text-sm mb-2">
+                                Observações
+                            </p>
+
+                            <div
+                                className="
+                                    bg-gray-50
+                                    border
+                                    rounded-2xl
+
+                                    p-4
+                                    min-h-[120px]
+                                "
+                            >
+
+                                {agendamento.descricaoEncaminhamento ||
+                                    "Nenhuma observação."}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            )}
+
+            {modalCancelar && (
+
+                <div
+                    className="
+                        fixed inset-0 z-50
+                        bg-black/40 backdrop-blur-sm
+
+                        flex items-center
+                        justify-center
+
+                        p-4
+                    "
+                >
+
+                    <div
+                        className="
+                            bg-white
+                            rounded-3xl
+                            shadow-2xl
+
+                            w-full
+                            max-w-md
+
+                            p-8
+                        "
+                    >
+
+                        <div className="text-center">
+
+                            <div
+                                className="
+                                    w-16 h-16
+                                    mx-auto mb-5
+
+                                    rounded-full
+
+                                    bg-red-100
+                                    text-red-600
+
+                                    flex items-center
+                                    justify-center
+
+                                    text-3xl
+                                "
+                            >
+                                !
+                            </div>
+
+                            <h2 className="text-2xl font-bold text-gray-800">
+
+                                Cancelar consulta?
+
+                            </h2>
+
+                            <p className="text-gray-500 mt-3 leading-relaxed">
+
+                                Ao cancelar, o agendamento será
+                                removido permanentemente e não
+                                poderá ser recuperado.
+
+                            </p>
+
+                        </div>
+
+                        <div className="flex justify-center gap-4 mt-8">
+
+                            <Button
+                                cor="vazado"
+
+                                ajuste="
+                                    px-5 py-2
+                                    mx-0
+                                "
+
+                                onClick={() =>
+                                    setModalCancelar(false)
+                                }
+                            >
+                                Voltar
+                            </Button>
+
+                            <Button
+                                cor="excluir"
+
+                                ajuste="
+                                    px-5 py-2
+                                    mx-0
+                                "
+
+                                onClick={() => {
+
+                                    cancelarConsulta(
+                                        agendamento.id
+                                    );
+
+                                    setModalCancelar(false);
+                                }}
+                            >
+                                Confirmar cancelamento
+                            </Button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            )}
+        </>
     );
 }

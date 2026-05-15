@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function Button({children, cor, ajuste = "", rota, onClick, type, especialidadeGeral}) {
+export default function Button({children, cor, ajuste = "", rota, onClick, type, especialidadeGeral, disabled}) {
 
     const base = `
         inline-flex items-center justify-center
@@ -29,9 +29,10 @@ export default function Button({children, cor, ajuste = "", rota, onClick, type,
     else{
         return(
             <button 
-                className={`${base} ${ajuste} ${estilos[cor]}`} 
+                className={`${base} ${ajuste} ${estilos[cor]} ${disabled ? "opacity-40 cursor-not-allowed" : ""}`} 
                 onClick = {onClick}
                 type={type || "button"}
+                disabled={disabled}
             >
                     {children}
             </button>
