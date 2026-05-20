@@ -1,9 +1,11 @@
 import Recepcao from "./telas/Recepcao";
 import Cadastro from "./telas/Cadastro";
-import { Routes, Route } from "react-router-dom";
 import Entrar from "./telas/Entrar";
 import Home from "./telas/Home";
 import Agendar from "./telas/Agendar";
+
+import { Routes, Route } from "react-router-dom";
+
 import PrivateRoute from "./config/PrivateRoute";
 
 function App() {

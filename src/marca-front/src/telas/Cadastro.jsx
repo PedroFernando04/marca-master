@@ -1,7 +1,9 @@
-import Input from "../components/Input";
-import Button from "../components/Button";
-import Select from "../components/Select";
-import SlideButton from "../components/SlideButton";
+import Input from "../components/basicos/Input";
+import Button from "../components/basicos/Button";
+import Select from "../components/basicos/Select";
+
+import SlideButton from "../components/utilitarios/SlideButton";
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 

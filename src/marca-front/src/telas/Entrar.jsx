@@ -1,5 +1,6 @@
-import Input from "../components/Input";
-import Button from "../components/Button";
+import Input from "../components/basicos/Input";
+import Button from "../components/basicos/Button";
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 

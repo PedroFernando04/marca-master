@@ -1,7 +1,10 @@
-import Header from "../components/Header";
+import Header from "../components/utilitarios/Header";
+
 import Agenda from "../components/Agenda";
-import Button from "../components/Button";
-import Select from "../components/Select";
+
+import Button from "../components/basicos/Button";
+import Select from "../components/basicos/Select";
+
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 

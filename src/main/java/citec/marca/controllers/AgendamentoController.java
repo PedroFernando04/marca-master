@@ -49,55 +49,33 @@ public class AgendamentoController {
     private PacienteRepository pacienteRepository;
 
     @GetMapping
-    public ResponseEntity<Page<AgendamentoDTO>> buscarAgendamentos(Authentication authentication,
-                                                                   @RequestParam(defaultValue = "0")
-                                                                   int pagina,
-                                                                   @RequestParam(required = false) EnumEspecialidades especialidade,
-                                                                   @RequestParam(required = false) EnumStatusEncaminhamento statusEncaminhamento
+    public ResponseEntity<Page<AgendamentoDTO>> buscarAgendamentos(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0")
+            int pagina,
+            @RequestParam(required = false) EnumEspecialidades especialidade,
+            @RequestParam(required = false) EnumStatusEncaminhamento statusEncaminhamento
     ) {
         String email = authentication.getName();
 
-        Funcionario funcionario =
-                funcionarioRepository
-                        .findByEmailIgnoreCase(email)
-                        .orElseThrow();
+        Funcionario funcionario = funcionarioRepository.findByEmailIgnoreCase(email).orElseThrow();
 
-        Specification<Agendamento> spec =
-                AgendamentoSpecification
-                        .clinicaEquals(
-                                funcionario.getClinica()
-                        );
+        Specification<Agendamento> spec = AgendamentoSpecification.clinicaEquals(funcionario.getClinica());
 
         if(especialidade != null){
-
-            spec = spec.and(
-                    AgendamentoSpecification
-                            .especialidadeEquals(especialidade)
-            );
+            spec = spec.and(AgendamentoSpecification.especialidadeEquals(especialidade));
         }
 
         if(statusEncaminhamento != null){
-
-            spec = spec.and(
-                    AgendamentoSpecification
-                            .statusEncaminhamentoEquals(
-                                    statusEncaminhamento
-                            )
-            );
+            spec = spec.and(AgendamentoSpecification.statusEncaminhamentoEquals(statusEncaminhamento));
         }
 
-        Pageable pageable =
-                PageRequest.of(
-                        pagina,
-                        15,
-                        Sort.by("data").descending()
-                );
+        Pageable pageable = PageRequest.of(pagina,15,Sort.by("data").descending());
 
         Page<AgendamentoDTO> resultado =
                 agendamentoRepository
                         .findAll(spec, pageable)
                         .map(agendamento -> new AgendamentoDTO(
-
                                 agendamento.getId(),
                                 agendamento.getPaciente().getNome(),
                                 agendamento.getData(),
@@ -133,12 +111,9 @@ public class AgendamentoController {
 
         Agendamento agendamento = agendamentoRepository.findById(id).get();
 
-        Path path = Paths.get(
-                agendamento.getEncaminhamentoMedicoPath()
-        );
+        Path path = Paths.get(agendamento.getEncaminhamentoMedicoPath());
 
-        Resource resource =
-                new UrlResource(path.toUri());
+        Resource resource = new UrlResource(path.toUri());
 
         String tipo = Files.probeContentType(path);
 
@@ -178,66 +153,36 @@ public class AgendamentoController {
 
     @PutMapping("/{id}/status")
     public ResponseEntity<Void> atualizarStatusAgendamento(
-
             @PathVariable Long id,
             @RequestBody StatusAgendamentoDTO dto,
             Authentication authentication
 
-    ) {
-
+    ){
         String email = authentication.getName();
 
-        Agendamento agendamento =
-                agendamentoRepository
-                        .findById(id)
-                        .orElseThrow();
+        Agendamento agendamento = agendamentoRepository.findById(id).orElseThrow();
 
-        boolean ehPaciente =
-                pacienteRepository
-                        .findByEmailIgnoreCase(email)
-                        .isPresent();
+        boolean ehPaciente = pacienteRepository.findByEmailIgnoreCase(email).isPresent();
 
         if(ehPaciente){
+            Paciente paciente = pacienteRepository.findByEmailIgnoreCase(email).orElseThrow();
 
-            Paciente paciente =
-                    pacienteRepository
-                            .findByEmailIgnoreCase(email)
-                            .orElseThrow();
-
-            if(
-                    !agendamento
-                            .getPaciente()
-                            .getId()
-                            .equals(paciente.getId())
-            ){
-
-                return ResponseEntity
-                        .status(403)
-                        .build();
+            if(!agendamento.getPaciente().getId().equals(paciente.getId())){
+                return ResponseEntity.status(403).build();
             }
 
-            if(agendamento
-                    .getStatusAgendamento()
-                    .equals(EnumStatusAgendamento.CANCELADO)
-            ){
-                return ResponseEntity
-                        .badRequest()
-                        .build();
+            if(agendamento.getStatusAgendamento().equals(EnumStatusAgendamento.CANCELADO)){
+                return ResponseEntity.badRequest().build();
             }
 
             LocalDateTime agora = LocalDateTime.now();
 
-            LocalDateTime dataConsulta = agendamento
-                    .getData()
-                    .atTime(0, 0);
+            LocalDateTime dataConsulta = agendamento.getData().atTime(0, 0);
 
-            Duration diferenca = Duration.between(agora, dataConsulta
-            );
+            Duration diferenca = Duration.between(agora, dataConsulta);
 
             if(diferenca.toHours() < 24){
-                return ResponseEntity
-                        .badRequest()
-                        .build();
+                return ResponseEntity.badRequest().build();
             }
         }
 

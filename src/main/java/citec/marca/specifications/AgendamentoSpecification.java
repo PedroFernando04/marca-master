@@ -12,7 +12,6 @@ public class AgendamentoSpecification {
     public static Specification<Agendamento> clinicaEquals(
             EnumClinica clinica
     ) {
-
         return (root, query, cb) ->
                 cb.equal(root.get("clinica"), clinica);
     }
@@ -20,7 +19,6 @@ public class AgendamentoSpecification {
     public static Specification<Agendamento> especialidadeEquals(
             EnumEspecialidades especialidade
     ) {
-
         return (root, query, cb) ->
                 cb.equal(root.get("especialidade"), especialidade);
     }
@@ -28,7 +26,6 @@ public class AgendamentoSpecification {
     public static Specification<Agendamento> statusEncaminhamentoEquals(
             EnumStatusEncaminhamento status
     ) {
-
         return (root, query, cb) ->
                 cb.equal(root.get("statusEncaminhamento"), status);
     }

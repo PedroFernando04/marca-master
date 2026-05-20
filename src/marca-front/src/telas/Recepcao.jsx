@@ -1,4 +1,5 @@
-import Button from "../components/Button";
+import Button from "../components/basicos/Button";
+
 import { Link } from "react-router-dom";
 
 export default function Recepcao(){

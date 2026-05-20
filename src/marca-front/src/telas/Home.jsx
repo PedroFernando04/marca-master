@@ -1,11 +1,14 @@
-import Header from "../components/Header";
+import Header from "../components/utilitarios/Header";
+import SlideButton from "../components/utilitarios/SlideButton";
+
 import Card from "../components/Card";
-import SlideButton from "../components/SlideButton";
 import CardConsulta from "../components/CardConsulta";
 import Tabela from "../components/Tabela";
 import Agenda from "../components/Agenda";
-import { useEffect, useState } from "react";
+
 import UsuarioLogado from "../config/UsuarioLogado";
+
+import { useEffect, useState } from "react";
 
 export default function Home(){
 
@@ -35,8 +38,7 @@ export default function Home(){
         }
 
         if(statusEncaminhamento !== ""){
-            url +=
-            `&statusEncaminhamento=${statusEncaminhamento}`;
+            url += `&statusEncaminhamento=${statusEncaminhamento}`;
         }
 
         fetch(url, {
@@ -143,7 +145,6 @@ export default function Home(){
                         return {
 
                             ...agendamento,
-
                             statusAgendamento: status
                         };
                     }
@@ -199,9 +200,7 @@ export default function Home(){
                         return {
 
                             ...agendamento,
-
-                            statusAgendamento:
-                                "CONFIRMADO"
+                            statusAgendamento: "CONFIRMADO"
                         };
                     }
 
@@ -227,7 +226,6 @@ export default function Home(){
 
                 {
                     method: "DELETE",
-
                     credentials: "include"
                 }
             );
@@ -241,9 +239,7 @@ export default function Home(){
 
             setAgendamentos((prev) =>
 
-                prev.filter(
-                    agendamento => agendamento.id !== id
-                )
+                prev.filter(agendamento => agendamento.id !== id)
             );
 
         } catch(error){

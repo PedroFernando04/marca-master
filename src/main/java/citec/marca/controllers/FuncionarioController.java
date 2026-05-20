@@ -31,7 +31,9 @@ public class FuncionarioController {
 
     @PostMapping("/cadastrar")
     public ResponseEntity<Funcionario> cadastrarPaciente (@RequestBody Funcionario funcionario){
+
         Funcionario userCriado = funcionarioService.salvarFuncionario(funcionario);
+
         return ResponseEntity.status(201).body(userCriado);
     }
 }

@@ -61,7 +61,6 @@ public class FuncionarioService {
 
             LocalDate data = LocalDate.parse(d);
 
-
             boolean existe = diasLiberadosRepository
                     .findByDataAndClinica(data, clinica)
                     .isPresent();

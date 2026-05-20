@@ -28,49 +28,27 @@ public class AgendamentoService {
 
     public void agendarConsulta(AgendarConsultaRequest request) throws IOException {
 
-        Paciente paciente =
-                pacienteRepository.findById(
-                        request.getPacienteId()
-                ).orElseThrow();
+        Paciente paciente = pacienteRepository.findById(request.getPacienteId()).orElseThrow();
 
-        EnumEspecialidades especialidade =
-                EnumEspecialidades.valueOf(
-                        request.getEspecialidade()
-                );
+        EnumEspecialidades especialidade = EnumEspecialidades.valueOf(request.getEspecialidade());
 
-        boolean jaExiste =
-                agendamentoRepository
-                        .existsByPacienteAndEspecialidade(
-                                paciente,
-                                especialidade
-                        );
+        boolean jaExiste = agendamentoRepository.existsByPacienteAndEspecialidade(paciente,especialidade);
 
-        EnumTipoAgendamento tipo =
-                jaExiste
-                        ? EnumTipoAgendamento.RETORNO
-                        : EnumTipoAgendamento.PRIMEIRA_CONSULTA;
+        EnumTipoAgendamento tipo = jaExiste ? EnumTipoAgendamento.RETORNO : EnumTipoAgendamento.PRIMEIRA_CONSULTA;
 
         String caminhoArquivo = null;
 
-        if (
-                request.getArquivo() != null &&
-                        !request.getArquivo().isEmpty()
-        ) {
+        if (request.getArquivo() != null && !request.getArquivo().isEmpty()) {
 
-            String nomeArquivo =
-                    UUID.randomUUID()
-                            + "_"
-                            + request.getArquivo().getOriginalFilename();
+            String nomeArquivo = UUID.randomUUID() + "_" + request.getArquivo().getOriginalFilename();
 
-            Path pastaUploads =
-                    Paths.get("uploads");
+            Path pastaUploads =Paths.get("uploads");
 
             if (!Files.exists(pastaUploads)) {
                 Files.createDirectories(pastaUploads);
             }
 
-            Path caminhoCompleto =
-                    pastaUploads.resolve(nomeArquivo);
+            Path caminhoCompleto = pastaUploads.resolve(nomeArquivo);
 
             Files.copy(
                     request.getArquivo().getInputStream(),
@@ -78,8 +56,7 @@ public class AgendamentoService {
                     StandardCopyOption.REPLACE_EXISTING
             );
 
-            caminhoArquivo =
-                    caminhoCompleto.toString();
+            caminhoArquivo = caminhoCompleto.toString();
         }
 
         Agendamento agendamento = new Agendamento();

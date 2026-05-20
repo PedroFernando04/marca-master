@@ -10,21 +10,13 @@ import java.time.LocalDate;
 public record AgendamentoDTO(
 
         Long id,
-
         String nomePaciente,
-
         LocalDate data,
-
         EnumEspecialidades especialidade,
-
         EnumStatusEncaminhamento statusEncaminhamento,
-
         String descricaoEncaminhamento,
-
         String encaminhamentoMedicoPath,
-
         EnumStatusAgendamento statusAgendamento,
-
         EnumClinica clinica
 
 ) {}

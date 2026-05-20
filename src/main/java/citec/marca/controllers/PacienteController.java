@@ -22,7 +22,9 @@ public class PacienteController {
 
     @PostMapping("/cadastrar")
     public ResponseEntity<Paciente> cadastrarPaciente (@RequestBody Paciente paciente){
+
         Paciente userCriado = pacienteService.salvarPaciente(paciente);
+
         return ResponseEntity.status(201).body(userCriado);
     }
 
