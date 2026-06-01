@@ -50,6 +50,9 @@ public class Agendamento {
     @Column
     private String descricaoEncaminhamento;
 
+    @Column
+    private Boolean filaDeEspera;
+
     public Agendamento() {}
 
     public Agendamento(
@@ -61,7 +64,8 @@ public class Agendamento {
             String encaminhamentoMedicoPath,
             EnumStatusAgendamento statusAgendamento,
             EnumStatusEncaminhamento statusEncaminhamento,
-            String descricaoEncaminhamento
+            String descricaoEncaminhamento,
+            Boolean filaDeEspera
     ) {
         this.paciente = paciente;
         this.clinica = clinica;
@@ -72,5 +76,6 @@ public class Agendamento {
         this.statusAgendamento = statusAgendamento;
         this.statusEncaminhamento = statusEncaminhamento;
         this.descricaoEncaminhamento = descricaoEncaminhamento;
+        this.filaDeEspera = filaDeEspera;
     }
 }

@@ -1,5 +1,6 @@
 package citec.marca.repositories.tabelasAuxiliares;
 
+import citec.marca.entities.enums.EnumClinica;
 import citec.marca.entities.enums.EnumEspecialidades;
 import citec.marca.entities.enums.EnumStatusAgendamento;
 import citec.marca.entities.tabelasAuxiliares.Agendamento;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -15,8 +17,12 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long>,
 
     boolean existsByPacienteAndEspecialidade(Paciente paciente, EnumEspecialidades especialidade);
 
-    List<Agendamento> findByPacienteOrderByDataDesc(Paciente paciente);
+    List<Agendamento> findByPacienteOrderByDataAsc(Paciente paciente);
 
     List<Agendamento> findByStatusAgendamento(EnumStatusAgendamento statusAgendamento);
+
+    Long countByDataAndClinicaAndEspecialidade(LocalDate data, EnumClinica clinica, EnumEspecialidades especialidade);
+
+    List<Agendamento> findByFilaDeEsperaAndDataAndClinicaAndEspecialidadeOrderByIdAsc(Boolean filaDeEspera, LocalDate data, EnumClinica clinica, EnumEspecialidades especialidade);
 
 }

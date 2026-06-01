@@ -49,42 +49,44 @@ export default function CardConsulta({
 
     const horas = diferencaMs / (1000 * 60 * 60);
 
-    return horas >= 24 && agendamento.statusEncaminhamento !== "REPROVADO";
+    return horas >= 24 && agendamento.statusEncaminhamento !== "REPROVADO" && agendamento.filaDeEspera !== true;
   }
 
   return (
     <>
       <div
         className="
-                    bg-white
-                    w-full
-                    max-w-6xl
+            bg-white
+            w-full
+            max-w-6xl
 
-                    rounded-3xl
-                    shadow-lg
+            rounded-3xl
+            shadow-lg
 
-                    border border-gray-100
+            border border-gray-100
 
-                    p-6
+            p-6
 
-                    flex flex-col
-                    lg:flex-row
+            flex flex-col
+            lg:flex-row
 
-                    gap-6
-                    items-center
-                "
+            gap-6
+            items-center
+        "
       >
+
+        
         <div className="flex-1 w-full ">
           <div className="flex items-center gap-4 ">
             <div
               className="
-                                bg-gradient-to-br
-                                from-blue-200
-                                to-violet-200
+                  bg-gradient-to-br
+                  from-blue-200
+                  to-violet-200
 
-                                w-16 h-16
-                                rounded-2xl
-                            "
+                  w-16 h-16
+                  rounded-2xl
+              "
             />
 
             <div>
@@ -100,11 +102,11 @@ export default function CardConsulta({
 
           <div
             className="
-                            flex flex-wrap
-                            gap-4
-                            mt-5
-                            items-center
-                        "
+                flex flex-wrap
+                gap-4
+                mt-5
+                items-center
+            "
           >
             <p className="text-sm text-gray-500">
               📅 {formatarData(agendamento.data)}
@@ -117,21 +119,21 @@ export default function CardConsulta({
 
               <span
                 className={`
-                                    px-3 py-1
-                                    rounded-full
-                                    text-xs
-                                    font-semibold
+                    px-3 py-1
+                    rounded-full
+                    text-xs
+                    font-semibold
 
-                                    ${
-                                      agendamento.statusAgendamento ===
-                                      "CONFIRMADO"
-                                        ? "bg-green-100 text-green-700"
-                                        : agendamento.statusAgendamento ===
-                                            "CANCELADO"
-                                          ? "bg-red-100 text-red-700"
-                                          : "bg-yellow-100 text-yellow-700"
-                                    }
-                                `}
+                    ${
+                      agendamento.statusAgendamento ===
+                      "CONFIRMADO"
+                        ? "bg-green-100 text-green-700"
+                        : agendamento.statusAgendamento ===
+                            "CANCELADO"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-yellow-100 text-yellow-700"
+                    }
+                `}
               >
                 {agendamento.statusAgendamento}
               </span>
@@ -144,71 +146,90 @@ export default function CardConsulta({
 
               <span
                 className={`
-                                    px-3 py-1
-                                    rounded-full
-                                    text-xs
-                                    font-semibold
+                    px-3 py-1
+                    rounded-full
+                    text-xs
+                    font-semibold
 
-                                    ${
-                                      agendamento.statusEncaminhamento ===
-                                      "APROVADO"
-                                        ? "bg-green-100 text-green-700"
-                                        : agendamento.statusEncaminhamento ===
-                                            "REPROVADO"
-                                          ? "bg-red-100 text-red-700"
-                                          : "bg-yellow-100 text-yellow-700"
-                                    }
-                                `}
+                    ${
+                      agendamento.statusEncaminhamento ===
+                      "APROVADO"
+                        ? "bg-green-100 text-green-700"
+                        : agendamento.statusEncaminhamento ===
+                            "REPROVADO"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-yellow-100 text-yellow-700"
+                    }
+                `}
               >
                 {agendamento.statusEncaminhamento}
               </span>
             </div>
+
+            {agendamento.filaDeEspera && (
+              <div className="flex items-center gap-2">
+
+                  <span
+                      className="
+                          px-3 py-1
+                          rounded-full
+                          text-xs
+                          font-semibold
+
+                          bg-purple-100
+                          text-purple-700
+                      "
+                  >
+                    FILA DE ESPERA
+                  </span>
+              </div>
+          )}
           </div>
         </div>
 
         <button
           onClick={() => window.open(urlEncaminhamento, "_blank")}
           className="
-                        w-full
-                        lg:w-[220px]
+              w-full
+              lg:w-[220px]
 
-                        h-[140px]
+              h-[140px]
 
-                        border
-                        rounded-2xl
+              border
+              rounded-2xl
 
-                        overflow-hidden
+              overflow-hidden
 
-                        bg-gray-50
-                        hover:opacity-90
+              bg-gray-50
+              hover:opacity-90
 
-                        transition
-                        flex-shrink-0
-                    "
+              transition
+              flex-shrink-0
+          "
         >
           {ehImagem(agendamento.encaminhamentoMedicoPath) ? (
             <img
               src={urlEncaminhamento}
               alt="Encaminhamento"
               className="
-                                w-full
-                                h-full
-                                object-cover
-                            "
+                  w-full
+                  h-full
+                  object-cover
+              "
             />
           ) : (
             <div
               className="
-                                w-full
-                                h-full
+                  w-full
+                  h-full
 
-                                flex flex-col
-                                items-center
-                                justify-center
+                  flex flex-col
+                  items-center
+                  justify-center
 
-                                text-gray-600
-                                gap-2
-                            "
+                  text-gray-600
+                  gap-2
+              "
             >
               <span className="text-4xl">📄</span>
 
@@ -219,26 +240,26 @@ export default function CardConsulta({
 
         <div
           className="
-                        flex
-                        lg:flex-col
+              flex
+              lg:flex-col
 
-                        gap-3
+              gap-3
 
-                        w-full
-                        lg:w-auto
+              w-full
+              lg:w-auto
 
-                        mr-3
-                    "
+              mr-3
+          "
         >
           <Button
             cor="vazado"
             ajuste="
-                            text-sm
-                            px-3
-                            py-1.5
-                            mx-0
-                            w-full
-                        "
+                text-sm
+                px-3
+                py-1.5
+                mx-0
+                w-full
+            "
             onClick={() => setModalAberto(true)}
           >
             Detalhes
@@ -247,12 +268,12 @@ export default function CardConsulta({
           <Button
             cor="fundo"
             ajuste="
-                            text-sm
-                            px-3
-                            py-1.5
-                            mx-0
-                            w-full
-                        "
+                text-sm
+                px-3
+                py-1.5
+                mx-0
+                w-full
+            "
             onClick={() => confirmarConsulta(agendamento.id)}
             disabled={!podeAlterarConsulta()}
           >
@@ -262,12 +283,12 @@ export default function CardConsulta({
           <Button
             cor="excluir"
             ajuste="
-                            text-sm
-                            px-3
-                            py-1.5
-                            mx-0
-                            w-full
-                        "
+                text-sm
+                px-3
+                py-1.5
+                mx-0
+                w-full
+            "
             onClick={() => setModalCancelar(true)}
           >
             Cancelar
@@ -278,25 +299,25 @@ export default function CardConsulta({
       {modalAberto && (
         <div
           className="
-                        fixed inset-0 z-50
-                        bg-black/40
+              fixed inset-0 z-50
+              bg-black/40
 
-                        flex items-center
-                        justify-center
+              flex items-center
+              justify-center
 
-                        p-4
-                    "
+              p-4
+          "
         >
           <div
             className="
-                            bg-white
-                            rounded-3xl
+                bg-white
+                rounded-3xl
 
-                            w-full
-                            max-w-3xl
+                w-full
+                max-w-3xl
 
-                            p-8
-                        "
+                p-8
+            "
           >
             <div className="flex justify-between mb-6">
               <div>
@@ -339,28 +360,45 @@ export default function CardConsulta({
               <div>
                 <p className="text-gray-500 text-sm">Status</p>
 
-                <span
-                  className={`
-                                        inline-block
-                                        mt-1
-                                        px-3 py-1
-                                        rounded-full
-                                        text-xs
-                                        font-semibold
+                <div className="flex flex-col gap-1 mt-1">
+                  <span
+                    className={`
+                      inline-block
+                      px-3 py-1
+                      rounded-full
+                      text-xs
+                      font-semibold
+                      w-fit
 
-                                        ${
-                                          agendamento.statusAgendamento ===
-                                          "CONFIRMADO"
-                                            ? "bg-green-100 text-green-700"
-                                            : agendamento.statusAgendamento ===
-                                                "CANCELADO"
-                                              ? "bg-red-100 text-red-700"
-                                              : "bg-yellow-100 text-yellow-700"
-                                        }
-                                    `}
-                >
-                  {agendamento.statusAgendamento}
-                </span>
+                      ${
+                        agendamento.statusAgendamento === "CONFIRMADO"
+                          ? "bg-green-100 text-green-700"
+                          : agendamento.statusAgendamento === "CANCELADO"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-yellow-100 text-yellow-700"
+                      }
+                    `}
+                  >
+                    {agendamento.statusAgendamento}
+                  </span>
+
+                  {agendamento.filaDeEspera && (
+                    <span
+                      className="
+                        px-3 py-1
+                        rounded-full
+                        text-xs
+                        font-semibold
+                        w-fit
+
+                        bg-purple-100
+                        text-purple-700
+                      "
+                    >
+                      FILA DE ESPERA
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -369,13 +407,13 @@ export default function CardConsulta({
 
               <div
                 className="
-                                    bg-gray-50
-                                    border
-                                    rounded-2xl
+                    bg-gray-50
+                    border
+                    rounded-2xl
 
-                                    p-4
-                                    min-h-[120px]
-                                "
+                    p-4
+                    min-h-[120px]
+                "
               >
                 {agendamento.descricaoEncaminhamento || "Nenhuma observação."}
               </div>
@@ -387,43 +425,43 @@ export default function CardConsulta({
       {modalCancelar && (
         <div
           className="
-                        fixed inset-0 z-50
-                        bg-black/40 backdrop-blur-sm
+              fixed inset-0 z-50
+              bg-black/40 backdrop-blur-sm
 
-                        flex items-center
-                        justify-center
+              flex items-center
+              justify-center
 
-                        p-4
-                    "
+              p-4
+          "
         >
           <div
             className="
-                            bg-white
-                            rounded-3xl
-                            shadow-2xl
+                bg-white
+                rounded-3xl
+                shadow-2xl
 
-                            w-full
-                            max-w-md
+                w-full
+                max-w-md
 
-                            p-8
-                        "
+                p-8
+            "
           >
             <div className="text-center">
               <div
                 className="
-                                    w-16 h-16
-                                    mx-auto mb-5
+                    w-16 h-16
+                    mx-auto mb-5
 
-                                    rounded-full
+                    rounded-full
 
-                                    bg-red-100
-                                    text-red-600
+                    bg-red-100
+                    text-red-600
 
-                                    flex items-center
-                                    justify-center
+                    flex items-center
+                    justify-center
 
-                                    text-3xl
-                                "
+                    text-3xl
+                "
               >
                 !
               </div>
@@ -442,9 +480,9 @@ export default function CardConsulta({
               <Button
                 cor="vazado"
                 ajuste="
-                                    px-5 py-2
-                                    mx-0
-                                "
+                    px-5 py-2
+                    mx-0
+                "
                 onClick={() => setModalCancelar(false)}
               >
                 Voltar
@@ -453,9 +491,9 @@ export default function CardConsulta({
               <Button
                 cor="excluir"
                 ajuste="
-                                    px-5 py-2
-                                    mx-0
-                                "
+                    px-5 py-2
+                    mx-0
+                "
                 onClick={() => {
                   cancelarConsulta(agendamento.id);
 

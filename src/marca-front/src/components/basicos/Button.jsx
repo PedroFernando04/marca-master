@@ -4,7 +4,7 @@ export default function Button({children, cor, ajuste = "", rota, onClick, type,
 
     const base = `
         inline-flex items-center justify-center
-        rounded-lg mx-5 px-4 py-2
+        rounded-lg mx-2 md:mx-5 px-4 py-2
         transition duration-200
         shadow-md hover:shadow-lg
     `;

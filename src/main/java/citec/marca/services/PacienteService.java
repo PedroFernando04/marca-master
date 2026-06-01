@@ -1,11 +1,13 @@
 package citec.marca.services;
 
+import citec.marca.dtos.records.DiaAgendaDTO;
 import citec.marca.entities.enums.EnumClinica;
 import citec.marca.entities.enums.EnumDiasSemana;
 import citec.marca.entities.enums.EnumEspecialidades;
 import citec.marca.entities.tabelasAuxiliares.DiaConsultorio;
 import citec.marca.entities.tabelasAuxiliares.DiasLiberados;
 import citec.marca.entities.tabelasPrincipais.Paciente;
+import citec.marca.repositories.tabelasAuxiliares.AgendamentoRepository;
 import citec.marca.repositories.tabelasAuxiliares.DiaConsultorioRepository;
 import citec.marca.repositories.tabelasAuxiliares.DiasLiberadosRepository;
 import citec.marca.repositories.tabelasPrincipais.PacienteRepository;
@@ -33,6 +35,9 @@ public class PacienteService {
     @Autowired
     private DiaConsultorioRepository diaConsultorioRepository;
 
+    @Autowired
+    private AgendamentoRepository agendamentoRepository;
+
     public Paciente salvarPaciente(Paciente paciente){
         Optional<Paciente> cpfBuscado = pacienteRepository.findByCpf(paciente.getCpf());
         Optional<Paciente> telefoneBuscado = pacienteRepository.findByTelefone(paciente.getTelefone());
@@ -53,24 +58,36 @@ public class PacienteService {
         return pacienteRepository.save(paciente);
     }
 
-    public List<String> buscarDiasLiberadosEspecialidade(String clinica, String especialidade, Integer mes, Integer ano){
+    public List<DiaAgendaDTO> buscarDiasLiberadosEspecialidade(String clinica, String especialidade, Integer mes, Integer ano
+    ) {
         EnumEspecialidades esp = EnumEspecialidades.valueOf(especialidade);
-        EnumClinica cli =  EnumClinica.valueOf(clinica);
+        EnumClinica cli = EnumClinica.valueOf(clinica);
 
         LocalDate inicio = LocalDate.of(ano, mes, 1);
         LocalDate fim = inicio.withDayOfMonth(inicio.lengthOfMonth());
 
-        List<DiasLiberados> diasLiberados = diasLiberadosRepository.findByClinicaAndDataBetween(cli, inicio, fim);
-        List<DiaConsultorio> diasEspecialidadeAtua = diaConsultorioRepository.findByClinicaAndEspecialidade(cli, esp);
+        List<DiasLiberados> diasLiberados =
+                diasLiberadosRepository.findByClinicaAndDataBetween(cli, inicio, fim);
 
-        Set<EnumDiasSemana> diasSemanaEspecialidade = diasEspecialidadeAtua.stream()
-                .map(DiaConsultorio::getDiaSemana)
-                .collect(Collectors.toSet());
+        List<DiaConsultorio> diasEspecialidadeAtua =
+                diaConsultorioRepository.findByClinicaAndEspecialidade(cli, esp);
+
+        Set<EnumDiasSemana> diasSemanaEspecialidade =
+                diasEspecialidadeAtua.stream()
+                        .map(DiaConsultorio::getDiaSemana)
+                        .collect(Collectors.toSet());
 
         return diasLiberados.stream()
                 .map(DiasLiberados::getData)
-                .filter(data -> diasSemanaEspecialidade.contains(EnumDiasSemana.de(data.getDayOfWeek())))
-                .map(LocalDate::toString)
+                .filter(data ->
+                        diasSemanaEspecialidade.contains(
+                                EnumDiasSemana.de(data.getDayOfWeek())
+                        )
+                )
+                .map(data -> new DiaAgendaDTO(
+                        data.toString(),
+                        agendamentoRepository.countByDataAndClinicaAndEspecialidade(data, cli, esp) >= 4
+                ))
                 .toList();
     }
 }

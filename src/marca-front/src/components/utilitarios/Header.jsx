@@ -22,7 +22,7 @@ export default function Header() {
 
   return (
     <div>
-      <header className=" text-white bg-gradient-to-tr from-blue-600 to-violet-800 p-2 flex justify-between shadow-md">
+      <header className="text-white bg-gradient-to-tr from-blue-600 to-violet-800 p-3 flex justify-between items-center shadow-md">
         <div className="flex flex-col">
           <h1 className="text-4xl font-bold ml-5 ">{usuario?.nome}</h1>
           <p className="ml-6 text-sm">Bem vindo ao Marcá</p>

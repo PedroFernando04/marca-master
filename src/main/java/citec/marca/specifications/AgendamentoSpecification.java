@@ -7,6 +7,8 @@ import citec.marca.entities.tabelasAuxiliares.Agendamento;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
+
 public class AgendamentoSpecification {
 
     public static Specification<Agendamento> clinicaEquals(
@@ -28,5 +30,19 @@ public class AgendamentoSpecification {
     ) {
         return (root, query, cb) ->
                 cb.equal(root.get("statusEncaminhamento"), status);
+    }
+
+    public static Specification<Agendamento> dataEquals(
+            LocalDate data
+    ) {
+        return (root, query, cb) ->
+                cb.equal(root.get("data"), data);
+    }
+
+    public static Specification<Agendamento> filaDeEsperaEquals(
+            Boolean filaDeEspera
+    ) {
+        return (root, query, cb) ->
+                cb.equal(root.get("filaDeEspera"), filaDeEspera);
     }
 }

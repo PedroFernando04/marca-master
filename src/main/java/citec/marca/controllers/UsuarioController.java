@@ -1,9 +1,7 @@
 package citec.marca.controllers;
 
-import citec.marca.entities.tabelasPrincipais.Paciente;
 import citec.marca.entities.tabelasPrincipais.Usuario;
 import citec.marca.repositories.tabelasAuxiliares.DiaConsultorioRepository;
-import citec.marca.services.PacienteService;
 import citec.marca.services.ScriptPadrao;
 import citec.marca.services.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;

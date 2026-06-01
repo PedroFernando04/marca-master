@@ -16,11 +16,16 @@ export default function Tabela({
   statusEncaminhamento,
   setStatusEncaminhamento,
 
-  especialidades,
+  dataConsulta,
+  setDataConsulta,
 
+  especialidades,
   statusEncaminhamentos,
 
   atualizarStatus,
+
+  filaDeEspera,
+  setFilaDeEspera
 }) {
   function formatarData(data) {
     const [ano, mes, dia] = data.split("-");
@@ -115,14 +120,61 @@ export default function Tabela({
     );
   }
 
+  async function liberarFilaDeEspera(id) {
+    try {
+
+      const response = await fetch(
+        `http://localhost:8080/api/agendamento/${id}/liberar`,
+        {
+          method: "PUT",
+          credentials: "include"
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao liberar fila");
+      }
+
+      setAgendamentos(prev =>
+        prev.map(agendamento => {
+
+          if (agendamento.id === id) {
+            return {
+              ...agendamento,
+              filaDeEspera: false
+            };
+          }
+
+          return agendamento;
+        })
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("Erro ao liberar fila");
+    }
+  }
+
   return (
-    <div className="w-[70%]">
+    <div className="w-full lg:w-[70%]">
       <div
-        className="flex flex-wrap items-end gap-5 mt-8 mb-5 
-                        bg-white/60 backdrop-blur-md rounded-2xl 
-                        border border-white/40 shadow-lg p-5"
+        className="
+          flex flex-col lg:flex-row
+          lg:justify-between
+          lg:items-end
+          gap-5
+          mt-8 mb-5
+          bg-white/60
+          backdrop-blur-mdFdetalg
+          rounded-2xl
+          border border-white/40
+          shadow-lg
+          p-5
+        "
       >
-        <div className="flex flex-col gap-2 min-w-[240px]">
+        <div className="flex flex-col gap-2 min-w-[220px]">
           <label className="text-sm font-semibold text-gray-700 ml-1">
             Especialidade
           </label>
@@ -143,9 +195,9 @@ export default function Tabela({
                             outline-none
                             transition
                             focus:ring-2
-                            focus:ring-violet-400
-                            focus:border-violet-400
-                            hover:border-violet-300
+                            focus:ring-blue-400
+                            focus:border-blue-400
+                            hover:border-blue-300
                             text-gray-700
                             font-medium
                         "
@@ -197,9 +249,86 @@ export default function Tabela({
             ))}
           </select>
         </div>
+
+        <div className="flex flex-col gap-2 min-w-[220px]">
+          <label className="text-sm font-semibold text-gray-700 ml-1">
+            Data da Consulta
+          </label>
+
+          <input
+            type="date"
+            value={dataConsulta}
+            onChange={(e) => {
+              setDataConsulta(e.target.value);
+              setPagina(0);
+            }}
+            className="
+              bg-white/80
+              border border-gray-200
+              rounded-xl
+              px-4 py-3
+              shadow-sm
+              outline-none
+              transition
+              focus:ring-2
+              focus:ring-blue-400
+              focus:border-blue-400
+              hover:border-blue-300
+              text-gray-700
+              font-medium
+            "
+          />
+        </div>
+
+        <div className="flex flex-col gap-2 min-w-[220px]">
+          <label className="text-sm font-semibold text-gray-700 ml-1">
+            Fila de Espera
+          </label>
+
+          <select
+            value={filaDeEspera}
+            onChange={(e) => {
+              setFilaDeEspera(e.target.value);
+              setPagina(0);
+            }}
+            className="
+              bg-white/80
+              border border-gray-200
+              rounded-xl
+              px-4 py-3
+              shadow-sm
+              outline-none
+              transition
+              focus:ring-2
+              focus:ring-blue-400
+              focus:border-blue-400
+              hover:border-blue-300
+              text-gray-700
+              font-medium
+            "
+          >
+            <option value="">Todos</option>
+            <option value="true">Em fila de espera</option>
+            <option value="false">Fora da fila</option>
+          </select>
+        </div>
+
+
+            <Button
+                cor="vazado"
+                onClick={() => {
+                    setEspecialidade("");
+                    setStatusEncaminhamento("");
+                    setDataConsulta("");
+                    setPagina(0);
+                }}
+            >
+                Limpar filtros
+            </Button>
+
       </div>
 
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl min-h-[412px] border border-white/40 overflow-hidden">
+      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl min-h-[412px] border border-white/40 overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
             <tr
@@ -243,13 +372,32 @@ export default function Tabela({
                 </td>
 
                 <td className="p-4">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full font-semibold ${corStatus(
-                      agendamento.statusEncaminhamento,
-                    )}`}
-                  >
-                    {agendamento.statusEncaminhamento}
-                  </span>
+                  <div className="flex flex-col gap-1">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full font-semibold w-fit ${corStatus(
+                        agendamento.statusEncaminhamento,
+                      )}`}
+                    >
+                      {agendamento.statusEncaminhamento}
+                    </span>
+
+                    {agendamento.filaDeEspera && (
+                      <span
+                        className="
+                          px-3 py-1
+                          text-xs
+                          rounded-full
+                          font-semibold
+                          w-fit
+
+                          bg-purple-100
+                          text-purple-700
+                        "
+                      >
+                      FILA DE ESPERA
+                      </span>
+                    )}
+                  </div>
                 </td>
 
                 <td className="p-4">{agendamento.descricaoEncaminhamento}</td>
@@ -265,6 +413,15 @@ export default function Tabela({
                   >
                     Detalhes
                   </Button>
+
+                  {agendamento.filaDeEspera && (
+                    <Button
+                      cor="vazado"
+                      onClick={() => liberarFilaDeEspera(agendamento.id)}
+                    >
+                      Liberar
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -407,18 +564,39 @@ export default function Tabela({
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-500">
-                      Status do Agendamento
-                    </p>
+                    <p className="text-sm text-gray-500">Status do Agendamento</p>
 
-                    <span
-                      className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${corStatus(
-                        agendamentoSelecionado.statusAgendamento,
-                      )}`}
-                    >
-                      {agendamentoSelecionado.statusAgendamento}
-                    </span>
+                    <div className="mt-1">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${corStatus(
+                          agendamentoSelecionado.statusAgendamento,
+                        )}`}
+                      >
+                        {agendamentoSelecionado.statusAgendamento}
+                      </span>
+
+                      {agendamentoSelecionado.filaDeEspera && (
+                        <div className="mt-2">
+                          <span
+                            className="
+                              inline-block
+                              px-3 py-1
+                              rounded-full
+                              text-xs
+                              font-semibold
+
+                              bg-purple-100
+                              text-purple-700
+                            "
+                          >
+                            FILA DE ESPERA
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
+
+                  
 
                   <div>
                     <p className="text-sm text-gray-500">Clínica</p>

@@ -17,6 +17,7 @@ public record AgendamentoDTO(
         String descricaoEncaminhamento,
         String encaminhamentoMedicoPath,
         EnumStatusAgendamento statusAgendamento,
-        EnumClinica clinica
+        EnumClinica clinica,
+        Boolean filaDeEspera
 
 ) {}

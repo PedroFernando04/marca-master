@@ -12,10 +12,10 @@ export default function SlideButton({onChange, texto1, texto2}){
     }
 
     return(
-        <div className="bg-white flex justify-self-center p-3 m-3 rounded-lg w-[1150px] justify-around gap-2 shadow-md">
+       <div className="bg-white flex p-2 md:p-3 m-3 rounded-lg w-full max-w-[1150px] justify-around gap-2 shadow-md mx-auto">
             <div
                 onClick={() => handleClick("agendamento")}
-                className={`px-6 py-2 rounded-lg  cursor-pointer transition-all duration-300 w-[50%] font-bold text-lg text-center  
+                className={`px-3 md:px-6 py-2 rounded-lg  cursor-pointer transition-all duration-300 w-[50%] font-bold text-sm md:text-lg text-center  
                     ${ativo === "agendamento"
                         ? baseAtivo
                         : baseDesativado
@@ -24,7 +24,7 @@ export default function SlideButton({onChange, texto1, texto2}){
                 </div>
             <div
                 onClick={() => handleClick("consultas")}
-                className={`px-6 py-2 rounded-lg  cursor-pointer transition-all duration-300 w-[50%] font-bold text-lg text-center
+                className={`px-6 py-2 rounded-lg  cursor-pointer transition-all duration-300 w-[50%] font-bold text-sm md:text-lg text-center
                     ${ativo === "consultas"
                         ? baseAtivo
                         : baseDesativado

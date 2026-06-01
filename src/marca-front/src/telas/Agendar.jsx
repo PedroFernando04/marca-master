@@ -1,7 +1,5 @@
 import Header from "../components/utilitarios/Header";
-
 import Agenda from "../components/Agenda";
-
 import Button from "../components/basicos/Button";
 import Select from "../components/basicos/Select";
 
@@ -11,34 +9,29 @@ import { useLocation } from "react-router-dom";
 export default function Agendar() {
     const [clinica, setClinica] = useState("");
     const [especialidade, setEspecialidade] = useState("");
-
     const [clinicas, setClinicas] = useState([]);
-    const [especialidades, setEspecialidades] = useState([]);
+    const [especialidadesDaClinica, setEspecialidadesDaClinica] = useState([]);
+    const [arquivo, setArquivo] = useState(null);
 
     const location = useLocation();
     const somenteClinico = location.state?.clinicoGeral;
-    const especialidadesFiltradas = somenteClinico
-    ? especialidades.filter(
-          e => e.codigo === "GERAL"
-      )
-    : especialidades.filter(
-          e => e.codigo !== "GERAL"
-      );
+
+    const encaminhamentoObrigatorio = especialidade !== "GERAL";
+
+    const especialidadesFiltradas = especialidadesDaClinica.filter(e =>
+        somenteClinico ? e.codigo === "GERAL" : e.codigo !== "GERAL"
+    );
+
+    console.log("somenteClinico:", somenteClinico);
+    console.log("especialidades:", especialidadesDaClinica);
+    console.log("filtradas:", especialidadesFiltradas);
 
     useEffect(() => {
         async function carregarEnums() {
             try {
-                const [resClinicas, resEspecialidades] = await Promise.all([
-                    fetch("http://localhost:8080/api/enum/clinicas"),
-                    fetch("http://localhost:8080/api/enum/especialidades")
-                ]);
-
+                const resClinicas = await fetch("http://localhost:8080/api/enum/clinicas");
                 const clinicasData = await resClinicas.json();
-                const especialidadesData = await resEspecialidades.json();
-
                 setClinicas(clinicasData);
-                setEspecialidades(especialidadesData);
-
             } catch (erro) {
                 console.error("Erro ao carregar enums:", erro);
             }
@@ -48,32 +41,43 @@ export default function Agendar() {
     }, []);
 
     useEffect(() => {
-    async function apenasClinico (){
-        try{
-            if(somenteClinico){
-                setEspecialidade("GERAL");
-            }
-        } catch (erro) {
-                console.error("Erro ao carregar enums:", erro);
-            }
-    }
-        apenasClinico();
-    }, [somenteClinico]);
 
-    const [arquivo, setArquivo] = useState(null);
+        fetch(`http://localhost:8080/api/enum/especialidades/${clinica}`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => {
+                if (!res.ok) {
+                    console.error("HTTP ERROR:", res.status);
+                    return [];
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (!Array.isArray(data)) {
+                    console.error("Resposta inválida:", data);
+                    setEspecialidadesDaClinica([]);
+                    return;
+                }
 
-    function handleFileChange(e){
+                setEspecialidadesDaClinica(data);
+            })
+            .catch(err => console.error(err));
+    }, [clinica]);
+
+    function handleFileChange(e) {
         setArquivo(e.target.files[0]);
     }
 
     return (
         <div className="min-h-screen">
-
             <Header />
 
             <div className="max-w-6xl mx-auto px-6 py-8">
 
-                {/* HEADER DA PÁGINA */}
                 <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border border-white/40">
 
                     <div>
@@ -88,19 +92,16 @@ export default function Agendar() {
                         </p>
                     </div>
 
-                    <div>
-                        <Button cor="fundo" rota="/home">
-                            Retornar
-                        </Button>
-                    </div>
+                    <Button cor="fundo" rota="/home">
+                        Retornar
+                    </Button>
                 </div>
 
-                {/* LEGENDA */}
                 <div className="flex justify-center mt-6">
                     <div className="flex items-center gap-6 bg-white/70 backdrop-blur-md px-6 py-3 rounded-xl shadow border border-white/40">
 
                         <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-blue-500 to-violet-800"></div>
+                            <div className="w-4 h-4 rounded-full bg-blue-500"></div>
                             <span className="text-sm text-gray-700 font-medium">Disponível</span>
                         </div>
 
@@ -109,28 +110,33 @@ export default function Agendar() {
                             <span className="text-sm text-gray-700 font-medium">Ocupado</span>
                         </div>
 
+                        <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 rounded-full bg-violet-800"></div>
+                            <span className="text-sm text-gray-700 font-medium">Lotado</span>
+                        </div>
+
                     </div>
                 </div>
 
-                {/* AGENDA */}
                 <div className="mt-8">
 
-                    {/* CAMPOS */}
                     <div className="flex flex-col gap-6 mb-5">
 
-                        {/* LINHA DOS SELECTS */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                            {/* CLÍNICA */}
                             <div className="flex flex-col">
                                 <label className="text-sm font-semibold text-gray-700 mb-2">
                                     Clínica
                                 </label>
 
                                 <Select
-                                    tipo={"clinica"}
+                                    tipo="clinica"
                                     value={clinica}
-                                    onChange={setClinica}
+                                    onChange={(valor) => {
+                                        setClinica(valor);
+                                        setEspecialidade("");
+                                        setArquivo(null);
+                                    }}
                                 >
                                     <option value="">Selecione a clínica</option>
 
@@ -150,14 +156,13 @@ export default function Agendar() {
                                 </div>
                             </div>
 
-                            {/* ESPECIALIDADE */}
                             <div className="flex flex-col">
                                 <label className="text-sm font-semibold text-gray-700 mb-2">
                                     Especialidade
                                 </label>
 
                                 <Select
-                                    tipo={"especialidade"}
+                                    tipo="especialidade"
                                     value={especialidade}
                                     onChange={setEspecialidade}
                                     opcoesFiltradas={especialidadesFiltradas}
@@ -176,7 +181,6 @@ export default function Agendar() {
 
                         </div>
 
-                        {/* UPLOAD */}
                         {especialidade !== "GERAL" && (
                             <div className="flex flex-col">
 
@@ -186,27 +190,16 @@ export default function Agendar() {
 
                                 <label className="cursor-pointer">
 
-                                    <div className="w-full border-2 border-dashed border-blue-300 
-                                                    rounded-2xl p-6
-                                                    hover:bg-blue-50 transition-all duration-200
-                                                    bg-gradient-to-br from-white to-blue-50/40">
+                                    <div className="w-full border-2 border-dashed border-blue-300 rounded-2xl p-6 hover:bg-blue-50 transition-all duration-200 bg-gradient-to-br from-white to-blue-50/40">
 
                                         <div className="flex flex-col items-center justify-center text-center">
 
-                                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr 
-                                                            from-blue-500 to-violet-700
-                                                            flex items-center justify-center mb-4">
-
-                                                <span className="text-white text-2xl">
-                                                    📄
-                                                </span>
-
+                                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-500 to-violet-700 flex items-center justify-center mb-4">
+                                                <span className="text-white text-2xl">📄</span>
                                             </div>
 
                                             <span className="text-blue-700 font-semibold text-base">
-                                                {arquivo
-                                                    ? arquivo.name
-                                                    : "Clique para enviar seu encaminhamento"}
+                                                {arquivo ? arquivo.name : "Clique para enviar seu encaminhamento"}
                                             </span>
 
                                             <span className="text-sm text-gray-500 mt-1">
@@ -230,23 +223,21 @@ export default function Agendar() {
 
                     </div>
 
-                    {(!clinica || !especialidade || !arquivo) && (
+                    {(!clinica || !especialidade || (encaminhamentoObrigatorio && !arquivo)) && (
                         <div className="text-lg text-center mt-10 text-gray-500">
                             Selecione a clínica, especialidade e envie seu encaminhamento para visualizar os dias disponíveis
                         </div>
                     )}
 
-                    {clinica &&
-                    especialidade &&
-                    arquivo && 
-                    (
-                        <Agenda 
+                    {clinica && especialidade && (especialidade === "GERAL" || arquivo) && (
+                        <Agenda
                             tipoAgenda="agendarConsulta"
                             clinica={clinica}
                             especialidade={especialidade}
                             arquivo={arquivo}
                         />
                     )}
+
                 </div>
 
             </div>

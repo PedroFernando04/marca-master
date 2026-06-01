@@ -22,8 +22,9 @@ export default function Home(){
     const [totalPaginas, setTotalPaginas] = useState(0);
 
     const [especialidade, setEspecialidade] = useState("");
-
     const [statusEncaminhamento, setStatusEncaminhamento] =useState("");
+    const [dataConsulta, setDataConsulta] = useState("");
+    const [filaDeEspera, setFilaDeEspera] = useState("");
 
     useEffect(() => {
 
@@ -39,6 +40,14 @@ export default function Home(){
 
         if(statusEncaminhamento !== ""){
             url += `&statusEncaminhamento=${statusEncaminhamento}`;
+        }
+
+        if (dataConsulta !== "") {
+            url += `&data=${dataConsulta}`;
+        }
+
+        if (filaDeEspera !== "") {
+            url += `&filaDeEspera=${filaDeEspera}`;
         }
 
         fetch(url, {
@@ -57,7 +66,9 @@ export default function Home(){
         pagina,
         especialidade,
         statusEncaminhamento,
-        usuario
+        usuario,
+        dataConsulta,
+        filaDeEspera
     ]);
 
     const [especialidades, setEspecialidades] = useState([]);
@@ -87,7 +98,6 @@ export default function Home(){
 
     }, []);
 
-
     useEffect(() => {
 
         if(usuario?.tipo !== "Paciente"){
@@ -107,22 +117,16 @@ export default function Home(){
     }, [usuario]);
 
     async function atualizarStatus(id, status){
-
         try{
 
             const response = await fetch(
-
                 `http://localhost:8080/api/agendamento/${id}/status`,
-
                 {
                     method: "PUT",
-
                     headers: {
                         "Content-Type": "application/json"
                     },
-
                     credentials: "include",
-
                     body: JSON.stringify({
                         status
                     })
@@ -143,7 +147,6 @@ export default function Home(){
                     if(agendamento.id === id){
 
                         return {
-
                             ...agendamento,
                             statusAgendamento: status
                         };
@@ -166,18 +169,13 @@ export default function Home(){
         try{
 
             const response = await fetch(
-
                 `http://localhost:8080/api/agendamento/${id}/status`,
-
                 {
                     method: "PUT",
-
                     headers: {
                         "Content-Type": "application/json"
                     },
-
                     credentials: "include",
-
                     body: JSON.stringify({
                         status: "CONFIRMADO"
                     })
@@ -198,7 +196,6 @@ export default function Home(){
                     if(agendamento.id === id){
 
                         return {
-
                             ...agendamento,
                             statusAgendamento: "CONFIRMADO"
                         };
@@ -221,9 +218,7 @@ export default function Home(){
         try{
 
             const response = await fetch(
-
                 `http://localhost:8080/api/agendamento/${id}`,
-
                 {
                     method: "DELETE",
                     credentials: "include"
@@ -251,28 +246,33 @@ export default function Home(){
     }
 
     return(
-        <div className="min-h-screen">
+        <div className="min-h-screen overflow-x-hidden">
 
-            <Header></Header>
+            <Header />
 
             {usuario?.tipo === "Paciente" && (
                 <div>
-                    <SlideButton onChange={setAba} texto1={"Agendamento"} texto2={"Minhas consultas"}></SlideButton>
+                    <SlideButton
+                        onChange={setAba}
+                        texto1={"Agendamento"}
+                        texto2={"Minhas consultas"}
+                    />
 
                     {aba === "agendamento" && (
                         <div>
-                            <h1 className="flex justify-center p-2 text-3xl font-bold">Qual tipo de atendimento você precisa?</h1>
+                            <h1 className="flex justify-center p-2 text-2xl md:text-3xl font-bold text-center">
+                                Qual tipo de atendimento você precisa?
+                            </h1>
 
-                                <div className="flex justify-center">
-                                    <Card tipo = "geral"></Card>
-
-                                    <Card tipo = "especialista"></Card>
-                                </div>
+                            <div className="flex flex-col md:flex-row justify-center items-center gap-4 px-4">
+                                <Card tipo="geral" />
+                                <Card tipo="especialista" />
+                            </div>
                         </div>
                     )}
 
                     {aba === "consultas" && (
-                        <div className="flex flex-col justify-center items-center">
+                        <div className="flex flex-col justify-center items-center px-4">
                             <h1 className="p-3"></h1>
 
                             <div className="w-full max-w-6xl flex flex-col gap-6">
@@ -300,42 +300,65 @@ export default function Home(){
                 </div>
             )}
 
-           { usuario?.tipo === "Funcionario" && (
-                <div >
-                    <SlideButton onChange={setAba} texto1={"Encaminhamentos"} texto2={"Calendário"}></SlideButton>
-    
+            {usuario?.tipo === "Funcionario" && (
+                <div>
+
+                    <SlideButton
+                        onChange={setAba}
+                        texto1={"Encaminhamentos"}
+                        texto2={"Calendário"}
+                    />
+
                     {aba === "agendamento" && (
                         <div>
-    
-                                <div className="flex justify-center mb-8">
-                                    <Tabela
-                                        agendamentos={agendamentos}
-                                        setAgendamentos={setAgendamentos}
-                                        pagina={pagina}
-                                        setPagina={setPagina}
-                                        totalPaginas={totalPaginas}
-                                        especialidade={especialidade}
-                                        setEspecialidade={setEspecialidade}
-                                        statusEncaminhamento={statusEncaminhamento}
-                                        setStatusEncaminhamento={setStatusEncaminhamento}
-                                        especialidades={especialidades}
-                                        statusEncaminhamentos={statusEncaminhamentos}
-                                        atualizarStatus={atualizarStatus}
-                                    />
-                                </div>
+
+                            <div className="flex justify-center mb-8 px-2 overflow-x-auto">
+                                <Tabela
+                                    agendamentos={agendamentos}
+                                    setAgendamentos={setAgendamentos}
+                                    pagina={pagina}
+                                    setPagina={setPagina}
+                                    totalPaginas={totalPaginas}
+
+                                    especialidade={especialidade}
+                                    setEspecialidade={setEspecialidade}
+
+                                    statusEncaminhamento={statusEncaminhamento}
+                                    setStatusEncaminhamento={setStatusEncaminhamento}
+
+                                    dataConsulta={dataConsulta}
+                                    setDataConsulta={setDataConsulta}
+
+                                    especialidades={especialidades}
+                                    statusEncaminhamentos={statusEncaminhamentos}
+
+                                    atualizarStatus={atualizarStatus}
+
+                                    filaDeEspera={filaDeEspera}
+                                    setFilaDeEspera={setFilaDeEspera}
+                                />
+                            </div>
+
                         </div>
                     )}
-    
+
                     {aba === "consultas" && (
                         <div>
-                                <div className="flex justify-center mt-8">
-                                    <Agenda ajuste={"w-[67%]"} tipoAgenda={"liberarDias"} clinica={usuario?.clinica}></Agenda>
-                                </div>
+
+                            <div className="flex justify-center mt-8 px-4">
+                                <Agenda
+                                    ajuste={"w-full md:w-[67%]"}
+                                    tipoAgenda={"liberarDias"}
+                                    clinica={usuario?.clinica}
+                                />
+                            </div>
+
                         </div>
                     )}
-    
-                </div>        
-           )}
+
+                </div>
+            )}
+
         </div>
     );
 }

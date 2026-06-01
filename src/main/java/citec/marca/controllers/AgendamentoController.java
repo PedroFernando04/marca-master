@@ -25,13 +25,13 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -51,10 +51,11 @@ public class AgendamentoController {
     @GetMapping
     public ResponseEntity<Page<AgendamentoDTO>> buscarAgendamentos(
             Authentication authentication,
-            @RequestParam(defaultValue = "0")
-            int pagina,
+            @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(required = false) EnumEspecialidades especialidade,
-            @RequestParam(required = false) EnumStatusEncaminhamento statusEncaminhamento
+            @RequestParam(required = false) EnumStatusEncaminhamento statusEncaminhamento,
+            @RequestParam(required = false) LocalDate data,
+            @RequestParam(required = false) Boolean filaDeEspera
     ) {
         String email = authentication.getName();
 
@@ -63,11 +64,31 @@ public class AgendamentoController {
         Specification<Agendamento> spec = AgendamentoSpecification.clinicaEquals(funcionario.getClinica());
 
         if(especialidade != null){
-            spec = spec.and(AgendamentoSpecification.especialidadeEquals(especialidade));
+            spec = spec.and(
+                    AgendamentoSpecification
+                            .especialidadeEquals(especialidade)
+            );
         }
 
         if(statusEncaminhamento != null){
-            spec = spec.and(AgendamentoSpecification.statusEncaminhamentoEquals(statusEncaminhamento));
+            spec = spec.and(
+                    AgendamentoSpecification
+                            .statusEncaminhamentoEquals(statusEncaminhamento)
+            );
+        }
+
+        if(data != null){
+            spec = spec.and(
+                    AgendamentoSpecification
+                            .dataEquals(data)
+            );
+        }
+
+        if (filaDeEspera != null) {
+            spec = spec.and(
+                    AgendamentoSpecification
+                            .filaDeEsperaEquals(filaDeEspera)
+            );
         }
 
         Pageable pageable = PageRequest.of(pagina,15,Sort.by("data").descending());
@@ -84,7 +105,8 @@ public class AgendamentoController {
                                 agendamento.getDescricaoEncaminhamento(),
                                 agendamento.getEncaminhamentoMedicoPath(),
                                 agendamento.getStatusAgendamento(),
-                                agendamento.getClinica()
+                                agendamento.getClinica(),
+                                agendamento.getFilaDeEspera()
                         ));
 
         return ResponseEntity.ok(resultado);
@@ -133,7 +155,7 @@ public class AgendamentoController {
 
         List<AgendamentoDTO> agendamentos =
                 agendamentoRepository
-                        .findByPacienteOrderByDataDesc(paciente)
+                        .findByPacienteOrderByDataAsc(paciente)
                         .stream()
                         .map(agendamento -> new AgendamentoDTO(
                                 agendamento.getId(),
@@ -144,7 +166,8 @@ public class AgendamentoController {
                                 agendamento.getDescricaoEncaminhamento(),
                                 agendamento.getEncaminhamentoMedicoPath(),
                                 agendamento.getStatusAgendamento(),
-                                agendamento.getClinica()
+                                agendamento.getClinica(),
+                                agendamento.getFilaDeEspera()
                         ))
                         .toList();
 
@@ -211,8 +234,7 @@ public class AgendamentoController {
                         .findById(id)
                         .orElseThrow();
 
-        if(
-                !agendamento.getPaciente().getId()
+        if(!agendamento.getPaciente().getId()
                         .equals(paciente.getId())
         ){
             return ResponseEntity
@@ -221,6 +243,32 @@ public class AgendamentoController {
         }
 
         agendamentoRepository.delete(agendamento);
+
+        Long qntAgendada = agendamentoRepository.countByDataAndClinicaAndEspecialidade(agendamento.getData(), agendamento.getClinica(), agendamento.getEspecialidade());
+        List<Agendamento> filaDeEspera = agendamentoRepository.findByFilaDeEsperaAndDataAndClinicaAndEspecialidadeOrderByIdAsc(true, agendamento.getData(), agendamento.getClinica(), agendamento.getEspecialidade());
+
+        if(qntAgendada <= 4 && !filaDeEspera.isEmpty()){
+            Agendamento primeiroNaFila = filaDeEspera.getFirst();
+            primeiroNaFila.setFilaDeEspera(false);
+            agendamentoRepository.save(primeiroNaFila);
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/liberar")
+    public ResponseEntity<Void> liberarFilaDeEspera(
+            @PathVariable Long id
+    ) {
+
+        Agendamento agendamento =
+                agendamentoRepository
+                        .findById(id)
+                        .orElseThrow();
+
+        agendamento.setFilaDeEspera(false);
+
+        agendamentoRepository.save(agendamento);
 
         return ResponseEntity.noContent().build();
     }

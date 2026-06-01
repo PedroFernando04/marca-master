@@ -20,15 +20,15 @@ export default function Card({ tipo }) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg w-[550px] min-h-[400px] m-5 flex justify-self-center flex-col mt-10">
-      <div className=" bg-gradient-to-br from-blue-200 to-blue-100 w-28 h-28 rounded-full m-10 ml-[40%]">
+    <div className="bg-white rounded-xl shadow-lg w-full max-w-[550px] min-h-[400px] flex flex-col mt-4 mb-6">
+      <div className="bg-gradient-to-br from-blue-200 to-blue-100 w-28 h-28 rounded-full mx-auto mt-10 mb-6">
         <div></div>
       </div>
 
       <div className="flex  flex-col">
         <h1 className="flex justify-center m-2 text-2xl font-bold">{`${tipoCard[tipo].h1}`}</h1>
 
-        <div className="flex justify-center ml-3 flex-row flex-wrap text-lg">
+        <div className="flex justify-center px-4 flex-row flex-wrap text-lg text-center">
           <p className="">{`${tipoCard[tipo].p}`}</p>
           <p className="font-bold">{`${tipoCard[tipo].requerimento}`}</p>
         </div>
@@ -37,7 +37,7 @@ export default function Card({ tipo }) {
       <Button
         rota={`${tipoCard[tipo].rota}`}
         cor="vazado"
-        ajuste="mt-8"
+        ajuste="mt-auto mb-6"
         especialidadeGeral={tipoCard[tipo].geral}
       >
         Selecionar

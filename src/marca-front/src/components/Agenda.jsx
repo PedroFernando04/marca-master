@@ -72,6 +72,8 @@ export default function Agenda({
   }
 
   const [diasLiberados, setDiasLiberados] = useState([]);
+  const [diasLotados, setDiasLotados] = useState([]);
+  const [diaLotadoSelecionado, setDiaLotadoSelecionado] = useState(false);
 
   const [modalAberto, setModalAberto] = useState(false);
   const [diaSelecionado, setDiaSelecionado] = useState(null);
@@ -135,12 +137,13 @@ export default function Agenda({
     );
   }
 
-  function handleClickDia(dia, ocupado) {
+  function handleClickDia(dia, ocupado, lotado) {
     if (dia === "") return;
 
     if (tipoAgenda === "agendarConsulta") {
       if (!ocupado) {
         setDiaSelecionado(dia);
+        setDiaLotadoSelecionado(lotado);
         setModalAberto(true);
       }
     } else if (tipoAgenda === "liberarDias") {
@@ -207,8 +210,25 @@ export default function Agenda({
         if (!response.ok) throw new Error();
 
         const data = await response.json();
+        console.log(data);
 
-        setDiasLiberados(data);
+        if (tipoAgenda === "agendarConsulta") {
+          setDiasLiberados(
+            data.map((dia) => dia.data)
+          );
+
+          setDiasLotados(
+            data
+              .filter((dia) => dia.lotado)
+              .map((dia) => dia.data)
+          );
+
+        } else {
+          setDiasLiberados(data);
+          setDiasLotados([]);
+
+        }
+
       } catch (err) {
         console.error("Erro ao buscar dias:", err);
       }
@@ -216,6 +236,7 @@ export default function Agenda({
 
     buscarDias();
   }, [mes, ano, clinica, especialidade, tipoAgenda]);
+
 
   return (
     <div
@@ -226,7 +247,7 @@ export default function Agenda({
           Voltar
         </Button>
 
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-lg md:text-3xl font-bold text-center">
           {mesesAno[mes]} - {ano}
         </h1>
 
@@ -235,11 +256,11 @@ export default function Agenda({
         </Button>
       </div>
 
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 gap-1 md:gap-2">
         {diasSemana.map((dia, i) => (
           <div
             key={i}
-            className="text-center font-bold text-white p-2 rounded-md bg-gradient-to-tr from-blue-600 to-blue-800"
+            className="text-center font-bold text-white p-1 md:p-2 text-xs md:text-base rounded-md bg-gradient-to-tr from-blue-600 to-blue-800"
           >
             {dia}
           </div>
@@ -247,7 +268,7 @@ export default function Agenda({
 
         {diasMes.map((dia, i) => {
           if (dia === "") {
-            return <div key={i} className="h-16" />;
+            return <div key={i} className="h-10 md:h-16" />;
           }
 
           const fimDeSemana = i % 7 === 0 || (i + 1) % 7 === 0;
@@ -255,6 +276,7 @@ export default function Agenda({
           const chave = `${ano}-${String(mes + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
 
           const liberado = diasLiberados.includes(chave);
+          const lotado = diasLotados.includes(chave);
 
           const hoje = new Date();
           hoje.setHours(0, 0, 0, 0);
@@ -265,17 +287,22 @@ export default function Agenda({
 
           const ocupado = !liberado || fimDeSemana || passado;
 
+
           return (
             <div
               key={i}
-              onClick={() => handleClickDia(dia, ocupado)}
+              onClick={() => handleClickDia(dia, ocupado, lotado)}
               className={`
-                                h-16 flex items-center justify-center rounded-md border
+                                h-10 md:h-16 flex items-center justify-center rounded-md border
                                 ${fimDeSemana || passado ? "cursor-not-allowed bg-gray-300" : "cursor-pointer"}
                                 ${
-                                  ocupado
-                                    ? "bg-gray-200 text-gray-500"
-                                    : "bg-blue-600 text-white hover:bg-blue-500"
+                                  fimDeSemana || passado
+                                    ? "bg-gray-300 text-gray-500"
+                                    : lotado
+                                      ? "bg-violet-700 text-white"
+                                      : liberado
+                                        ? "bg-blue-600 text-white hover:bg-blue-500"
+                                        : "bg-gray-200 text-gray-500"
                                 }
                             `}
             >
@@ -296,10 +323,24 @@ export default function Agenda({
       {modalAberto && (
         <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-2xl max-w-sm w-full text-center">
-            <h2 className="text-2xl font-bold mb-4">Confirmar Consulta</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              {diaLotadoSelecionado
+                ? "Entrar na fila de espera"
+                : "Confirmar Consulta"}
+            </h2>
 
             <p className="mb-6">
-              Dia {diaSelecionado} de {mesesAno[mes]}
+              {diaLotadoSelecionado ? (
+                <>
+                  Este dia já atingiu o limite de agendamentos.
+                  <br />
+                  Seu atendimento ficará em <strong>fila de espera</strong>.
+                </>
+              ) : (
+                <>
+                  Dia {diaSelecionado} de {mesesAno[mes]}
+                </>
+              )}
             </p>
 
             <div className="flex justify-center gap-4">

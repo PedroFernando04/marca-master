@@ -1,5 +1,6 @@
 package citec.marca.controllers;
 
+import citec.marca.dtos.records.DiaAgendaDTO;
 import citec.marca.services.FuncionarioService;
 import citec.marca.services.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +22,13 @@ public class DiasLiberadosController {
     private PacienteService pacienteService;
 
     @GetMapping("/especialidade")
-    public ResponseEntity<List<String>> listarDiasLiberadosEspecialidade(
+    public ResponseEntity<List<DiaAgendaDTO>> listarDiasLiberadosEspecialidade(
             @RequestParam(required = false) String clinica,
             @RequestParam(required = false) String especialidade,
             @RequestParam Integer mes,
             @RequestParam Integer ano
     ) {
-        List<String> dias = pacienteService.buscarDiasLiberadosEspecialidade(clinica, especialidade, mes, ano);
+        List<DiaAgendaDTO> dias = pacienteService.buscarDiasLiberadosEspecialidade(clinica, especialidade, mes, ano);
 
         return ResponseEntity.ok(dias);
     }

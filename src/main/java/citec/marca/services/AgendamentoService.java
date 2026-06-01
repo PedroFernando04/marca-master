@@ -70,6 +70,9 @@ public class AgendamentoService {
         agendamento.setStatusAgendamento(EnumStatusAgendamento.AGUARDANDO);
         agendamento.setStatusEncaminhamento(EnumStatusEncaminhamento.AGUARDANDO);
 
+        Long quantidadeDeAgendamentos = agendamentoRepository.countByDataAndClinicaAndEspecialidade(LocalDate.parse(request.getData()), EnumClinica.valueOf(request.getClinica()),  especialidade);
+        agendamento.setFilaDeEspera(quantidadeDeAgendamentos >= 4);
+
         agendamentoRepository.save(agendamento);
     }
 }
