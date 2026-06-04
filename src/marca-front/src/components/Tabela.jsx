@@ -22,8 +22,6 @@ export default function Tabela({
   especialidades,
   statusEncaminhamentos,
 
-  atualizarStatus,
-
   filaDeEspera,
   setFilaDeEspera
 }) {
@@ -158,22 +156,23 @@ export default function Tabela({
   }
 
   return (
-    <div className="w-full lg:w-[70%]">
+    <div className="w-full lg:w-[80%]">
       <div
-        className="
-          flex flex-col lg:flex-row
-          lg:justify-between
-          lg:items-end
-          gap-5
-          mt-8 mb-5
-          bg-white/60
-          backdrop-blur-mdFdetalg
-          rounded-2xl
-          border border-white/40
-          shadow-lg
-          p-5
-        "
-      >
+      className="
+        flex flex-col lg:flex-row
+        lg:justify-between
+        lg:items-end
+        gap-5
+        mt-8 mb-5
+        bg-white/60
+        backdrop-blur-md
+        rounded-2xl
+        border border-white/40
+        shadow-lg
+        p-5
+        overflow-hidden
+      "
+    >
         <div className="flex flex-col gap-2 min-w-[220px]">
           <label className="text-sm font-semibold text-gray-700 ml-1">
             Especialidade
@@ -187,20 +186,20 @@ export default function Tabela({
               setPagina(0);
             }}
             className="
-                            bg-white/80
-                            border border-gray-200
-                            rounded-xl
-                            px-4 py-3
-                            shadow-sm
-                            outline-none
-                            transition
-                            focus:ring-2
-                            focus:ring-blue-400
-                            focus:border-blue-400
-                            hover:border-blue-300
-                            text-gray-700
-                            font-medium
-                        "
+              bg-white/80
+              border border-gray-200
+              rounded-xl
+              px-4 py-3
+              shadow-sm
+              outline-none
+              transition
+              focus:ring-2
+              focus:ring-blue-400
+              focus:border-blue-400
+              hover:border-blue-300
+              text-gray-700
+              font-medium
+          "
           >
             <option value="">Todas especialidades</option>
 
@@ -312,20 +311,20 @@ export default function Tabela({
             <option value="false">Fora da fila</option>
           </select>
         </div>
-
-
+        <div className="w-full lg:w-auto flex justify-center lg:justify-end">
             <Button
                 cor="vazado"
                 onClick={() => {
                     setEspecialidade("");
                     setStatusEncaminhamento("");
                     setDataConsulta("");
+                    setFilaDeEspera("");
                     setPagina(0);
                 }}
             >
                 Limpar filtros
             </Button>
-
+        </div>
       </div>
 
       <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl min-h-[412px] border border-white/40 overflow-x-auto">
@@ -335,15 +334,17 @@ export default function Tabela({
               className="text-white text-sm uppercase tracking-wide 
                                        bg-gradient-to-tr from-blue-500 to-violet-800"
             >
-              <th className="p-4 text-left">Data</th>
+              <th className="p-4 text-center">Data</th>
 
-              <th className="p-4 text-left">Paciente</th>
+              <th className="p-4 text-center">Paciente</th>
 
-              <th className="p-4 text-left">Especialidade</th>
+              <th className="p-4 text-center">Especialidade</th>
 
-              <th className="p-4 text-left">Status</th>
+              <th className="p-4 text-center">Encaminhamento</th>
+              
+              <th className="p-4 text-center">Confirmação</th>
 
-              <th className="p-4 text-left">Observações</th>
+              <th className="p-4 text-center">Observações</th>
 
               <th className="p-4 text-center">Ações</th>
             </tr>
@@ -363,16 +364,16 @@ export default function Tabela({
                 key={agendamento.id}
                 className="border-b hover:bg-blue-50 transition"
               >
-                <td className="p-4">{formatarData(agendamento.data)}</td>
+                <td className="p-4 text-center">{formatarData(agendamento.data)}</td>
 
-                <td className="p-4">{agendamento.nomePaciente}</td>
+                <td className="p-4 text-center">{agendamento.nomePaciente}</td>
 
-                <td className="p-4">
+                <td className="p-4 text-center">
                   {descricaoEspecialidade(agendamento.especialidade)}
                 </td>
 
-                <td className="p-4">
-                  <div className="flex flex-col gap-1">
+                <td className="flex p-4 justify-center">
+                  <div className="flex flex-col gap-1 ">
                     <span
                       className={`px-3 py-1 text-xs rounded-full font-semibold w-fit ${corStatus(
                         agendamento.statusEncaminhamento,
@@ -400,7 +401,17 @@ export default function Tabela({
                   </div>
                 </td>
 
-                <td className="p-4">{agendamento.descricaoEncaminhamento}</td>
+                <td className="p-4 text-center">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full font-semibold w-fit ${corStatus(
+                        agendamento.statusAgendamento,
+                      )}`}
+                    >
+                      {agendamento.statusAgendamento}
+                    </span>
+                </td>
+
+                <td className="p-4 text-center">{agendamento.descricaoEncaminhamento}</td>
 
                 <td className="p-4 text-center">
                   <Button
@@ -429,59 +440,61 @@ export default function Tabela({
         </table>
       </div>
 
-      {pagina > 0 && (
-        <div className="flex justify-center items-center gap-4 mt-5">
-          <button
+      {totalPaginas > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-5 bg-white p-3 rounded-3xl shadow-lg">
+          <Button
             disabled={pagina === 0}
             onClick={() => setPagina(pagina - 1)}
-            className="bg-gray-200 px-4 py-2 rounded-lg disabled:opacity-40"
+            cor = "fundo"
+            ajuste="px-4 py-2 rounded-lg disabled:opacity-40"
           >
             Anterior
-          </button>
+          </Button>
 
           <span>
             Página {pagina + 1} de {totalPaginas}
           </span>
 
-          <button
+          <Button
             disabled={pagina + 1 >= totalPaginas}
             onClick={() => setPagina(pagina + 1)}
-            className="bg-gray-200 px-4 py-2 rounded-lg disabled:opacity-40"
+            cor = "fundo"
+            ajuste="x-4 py-2 rounded-lg disabled:opacity-40"
           >
             Próxima
-          </button>
+          </Button>
         </div>
       )}
 
       {modalAberto && agendamentoSelecionado && (
         <div
           className="
-                        fixed inset-0 z-50
-                        flex items-center justify-center
-                        bg-black/40 backdrop-blur-sm
-                        p-4
-                    "
+            fixed inset-0 z-50
+            flex items-center justify-center
+            bg-black/40 backdrop-blur-sm
+            p-4
+          "
         >
           <div
             className="
-                            bg-white rounded-3xl
-                            shadow-2xl
+              bg-white rounded-3xl
+              shadow-2xl
 
-                            w-full
-                            max-w-4xl
+              w-full
+              max-w-4xl
 
-                            max-h-[95vh]
+              max-h-[95vh]
 
-                            overflow-hidden
-                            flex flex-col
-                        "
+              overflow-hidden
+              flex flex-col
+            "
           >
             <div
               className="
-                                flex justify-between items-start
-                                p-6 pb-4
-                                border-b
-                            "
+                flex justify-between items-start
+                p-6 pb-4
+                border-b
+              "
             >
               <div>
                 <h2 className="text-2xl font-bold text-gray-800">
@@ -496,9 +509,9 @@ export default function Tabela({
               <button
                 onClick={() => setModalAberto(false)}
                 className="
-                                    text-gray-400 hover:text-gray-700
-                                    text-2xl font-bold
-                                "
+                  text-gray-400 hover:text-gray-700
+                  text-2xl font-bold
+                "
               >
                 ×
               </button>
@@ -506,24 +519,24 @@ export default function Tabela({
 
             <div
               className="
-                                overflow-y-auto
-                                p-6
-                                flex-1
-                            "
+                overflow-y-auto
+                p-6
+                flex-1
+              "
             >
               <div
                 className="
-                                    grid
-                                    grid-cols-1
-                                    lg:grid-cols-2
-                                    gap-8
-                                "
+                  grid
+                  grid-cols-1
+                  lg:grid-cols-2
+                  gap-8
+                "
               >
                 <div
                   className="
-                                        grid grid-cols-1 sm:grid-cols-2
-                                        gap-6 content-start
-                                    "
+                    grid grid-cols-1 sm:grid-cols-2
+                    gap-6 content-start
+                  "
                 >
                   <div>
                     <p className="text-sm text-gray-500">Paciente</p>
@@ -596,8 +609,6 @@ export default function Tabela({
                     </div>
                   </div>
 
-                  
-
                   <div>
                     <p className="text-sm text-gray-500">Clínica</p>
 
@@ -613,22 +624,22 @@ export default function Tabela({
                   <button
                     onClick={() => window.open(urlEncaminhamento, "_blank")}
                     className="
-                                            w-full
+                      w-full
 
-                                            h-[180px]
-                                            sm:h-[220px]
+                      h-[180px]
+                      sm:h-[220px]
 
-                                            border
-                                            rounded-2xl
-                                            overflow-hidden
+                      border
+                      rounded-2xl
+                      overflow-hidden
 
-                                            bg-gray-50
-                                            hover:opacity-90
-                                            transition
+                      bg-gray-50
+                      hover:opacity-90
+                      transition
 
-                                            flex items-center
-                                            justify-center
-                                        "
+                      flex items-center
+                      justify-center
+                    "
                   >
                     {ehImagem(
                       agendamentoSelecionado.encaminhamentoMedicoPath,
@@ -637,20 +648,20 @@ export default function Tabela({
                         src={urlEncaminhamento}
                         alt="Encaminhamento"
                         className="
-                                                    w-full
-                                                    h-full
-                                                    object-cover
-                                                "
+                          w-full
+                          h-full
+                          object-cover
+                        "
                       />
                     ) : (
                       <div
                         className="
-                                                    flex flex-col
-                                                    items-center
-                                                    justify-center
-                                                    gap-3
-                                                    text-gray-600
-                                                "
+                          flex flex-col
+                          items-center
+                          justify-center
+                          gap-3
+                          text-gray-600
+                        "
                       >
                         <span className="text-5xl">📄</span>
 
@@ -669,34 +680,32 @@ export default function Tabela({
                   onChange={(e) => setObservacao(e.target.value)}
                   placeholder="Digite observações sobre o encaminhamento"
                   className="
-                                        w-full
-                                        bg-gray-50 border
-                                        rounded-2xl p-4
-                                        text-gray-700
-                                        min-h-[140px]
-                                        outline-none
-                                        resize-none
-                                        focus:ring-2
-                                        focus:ring-violet-400
-                                    "
+                    w-full
+                    bg-gray-50 border
+                    rounded-2xl p-4
+                    text-gray-700
+                    min-h-[140px]
+                    outline-none
+                    resize-none
+                    focus:ring-2
+                    focus:ring-violet-400
+                  "
                 />
               </div>
             </div>
 
             <div
               className="
-                                flex justify-end gap-4
-                                p-6 pt-4
-                                border-t
-                                bg-white
-                            "
+                flex justify-end gap-4
+                p-6 pt-4
+                border-t
+                bg-white
+              "
             >
               <Button
                 cor="excluir"
                 onClick={async () => {
                   await atualizarEncaminhamento("REPROVADO");
-
-                  await atualizarStatus(agendamentoSelecionado.id, "CANCELADO");
                 }}
               >
                 Reprovar
@@ -706,11 +715,6 @@ export default function Tabela({
                 cor="fundo"
                 onClick={async () => {
                   await atualizarEncaminhamento("APROVADO");
-
-                  await atualizarStatus(
-                    agendamentoSelecionado.id,
-                    "AGUARDANDO",
-                  );
                 }}
               >
                 Aprovar

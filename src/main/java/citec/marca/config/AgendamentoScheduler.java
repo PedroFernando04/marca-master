@@ -18,8 +18,10 @@ public class AgendamentoScheduler {
     @Autowired
     private AgendamentoRepository agendamentoRepository;
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 5 0 * * *")
     public void cancelarPendentes(){
+
+        System.out.println("Scheduler executado: " + LocalDateTime.now());
 
         List<Agendamento> agendamentos = agendamentoRepository.findByStatusAgendamento(EnumStatusAgendamento.AGUARDANDO);
 
@@ -37,6 +39,11 @@ public class AgendamentoScheduler {
             if(diferenca.toHours() < 24 && agendamento.getStatusAgendamento().equals(EnumStatusAgendamento.AGUARDANDO)){
 
                 agendamento.setStatusAgendamento(EnumStatusAgendamento.CANCELADO);
+
+                if (agendamento.getFilaDeEspera())
+                    agendamento.setFilaDeEspera(false);
+
+                agendamento.setDescricaoEncaminhamento("Esta consulta foi cancelada por falta de confirmação. Por favor, exclua este registro e faça o agendamento novamente.");
 
                 agendamentoRepository.save(agendamento);
             }

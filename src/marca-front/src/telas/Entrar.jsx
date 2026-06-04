@@ -84,11 +84,19 @@ export default function Entrar() {
 
     return (
         <div className="min-h-screen flex justify-center items-center px-4">
-            <div className="bg-white rounded-xl shadow-lg w-full max-w-[500px] h-fit">
-                <h1 className="text-4xl font-bold m-5">
-                    Entrar
-                </h1>
 
+
+            <div className="bg-white rounded-xl shadow-lg w-full max-w-[500px] h-fit">
+                <div className=" flex flex-row justify-between items-center">
+                    <h1 className="text-4xl font-bold m-5">
+                        Entrar
+                    </h1>
+                    
+                    <Button cor = "fundo" rota = "/recepcao">
+                        Voltar
+                    </Button>
+                </div>
+                
                 <p className="ml-5">
                     Acesse sua conta
                 </p>

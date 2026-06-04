@@ -107,7 +107,15 @@ export default function Cadastro(){
             {aba === "agendamento" && (
                 <div className="bg-white rounded-xl shadow-lg w-[500px] h-fit m-5 flex justify-items-around flex-col mt-10">
                     <div>
-                        <h1 className="text-3xl font-bold m-5">Criar Conta</h1>
+                        <div className=" flex flex-row justify-between items-center">
+                            <h1 className="text-4xl font-bold m-5">
+                                Criar Conta
+                            </h1>
+                            
+                            <Button cor = "fundo" rota = "/recepcao">
+                                Voltar
+                            </Button>
+                        </div>
                         <p className="ml-5">Preencha seus dados para começar</p>
                     </div>
 
@@ -134,7 +142,15 @@ export default function Cadastro(){
             {aba === "consultas" && (
                 <div className="bg-white rounded-xl shadow-lg w-[500px] h-fit m-5 flex justify-items-around flex-col mt-10">
                     <div>
-                        <h1 className="text-3xl font-bold m-5">Criar Conta</h1>
+                        <div className=" flex flex-row justify-between items-center">
+                            <h1 className="text-4xl font-bold m-5">
+                                Criar Conta
+                            </h1>
+                            
+                            <Button cor = "fundo" rota = "/recepcao">
+                                Voltar
+                            </Button>
+                        </div>
                         <p className="ml-5">Preencha seus dados para começar</p>
                     </div>
 

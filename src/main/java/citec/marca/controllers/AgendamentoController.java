@@ -12,12 +12,12 @@ import citec.marca.entities.tabelasPrincipais.Paciente;
 import citec.marca.repositories.tabelasAuxiliares.AgendamentoRepository;
 import citec.marca.repositories.tabelasPrincipais.FuncionarioRepository;
 import citec.marca.repositories.tabelasPrincipais.PacienteRepository;
+import citec.marca.services.AgendamentoService;
 import citec.marca.specifications.AgendamentoSpecification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -47,6 +47,9 @@ public class AgendamentoController {
 
     @Autowired
     private PacienteRepository pacienteRepository;
+
+    @Autowired
+    private AgendamentoService agendamentoService;
 
     @GetMapping
     public ResponseEntity<Page<AgendamentoDTO>> buscarAgendamentos(
@@ -91,7 +94,7 @@ public class AgendamentoController {
             );
         }
 
-        Pageable pageable = PageRequest.of(pagina,15,Sort.by("data").descending());
+        Pageable pageable = PageRequest.of(pagina,5,Sort.by("data").ascending());
 
         Page<AgendamentoDTO> resultado =
                 agendamentoRepository
@@ -118,12 +121,7 @@ public class AgendamentoController {
             @RequestBody EncaminhamentoDTO dto
     ) {
 
-        Agendamento agendamento = agendamentoRepository.findById(id).orElseThrow();
-
-        agendamento.setStatusEncaminhamento(dto.getStatus());
-        agendamento.setDescricaoEncaminhamento(dto.getDescricao());
-
-        agendamentoRepository.save(agendamento);
+        agendamentoService.atualizarStatusEncaminhamento(id, dto);
 
         return ResponseEntity.ok().build();
     }
@@ -145,18 +143,29 @@ public class AgendamentoController {
     }
 
     @GetMapping("/paciente")
-    public ResponseEntity<List<AgendamentoDTO>> buscarAgendamentosPaciente(
-            Authentication authentication
+    public ResponseEntity<Page<AgendamentoDTO>> buscarAgendamentosPaciente(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int pagina
     ) {
 
         String email = authentication.getName();
 
-        Paciente paciente = pacienteRepository.findByEmailIgnoreCase(email).orElseThrow();
+        Paciente paciente =
+                pacienteRepository
+                        .findByEmailIgnoreCase(email)
+                            .orElseThrow();
 
-        List<AgendamentoDTO> agendamentos =
+        Pageable pageable = PageRequest.of(
+                pagina,
+                5,
+                Sort.by("data")
+                        .ascending()
+                        .and(Sort.by("id").ascending())
+        );
+
+        Page<AgendamentoDTO> agendamentos =
                 agendamentoRepository
-                        .findByPacienteOrderByDataAsc(paciente)
-                        .stream()
+                        .findByPaciente(paciente, pageable)
                         .map(agendamento -> new AgendamentoDTO(
                                 agendamento.getId(),
                                 agendamento.getPaciente().getNome(),
@@ -168,8 +177,7 @@ public class AgendamentoController {
                                 agendamento.getStatusAgendamento(),
                                 agendamento.getClinica(),
                                 agendamento.getFilaDeEspera()
-                        ))
-                        .toList();
+                        ));
 
         return ResponseEntity.ok(agendamentos);
     }
@@ -181,37 +189,10 @@ public class AgendamentoController {
             Authentication authentication
 
     ){
-        String email = authentication.getName();
-
-        Agendamento agendamento = agendamentoRepository.findById(id).orElseThrow();
-
-        boolean ehPaciente = pacienteRepository.findByEmailIgnoreCase(email).isPresent();
-
-        if(ehPaciente){
-            Paciente paciente = pacienteRepository.findByEmailIgnoreCase(email).orElseThrow();
-
-            if(!agendamento.getPaciente().getId().equals(paciente.getId())){
-                return ResponseEntity.status(403).build();
-            }
-
-            if(agendamento.getStatusAgendamento().equals(EnumStatusAgendamento.CANCELADO)){
-                return ResponseEntity.badRequest().build();
-            }
-
-            LocalDateTime agora = LocalDateTime.now();
-
-            LocalDateTime dataConsulta = agendamento.getData().atTime(0, 0);
-
-            Duration diferenca = Duration.between(agora, dataConsulta);
-
-            if(diferenca.toHours() < 24){
-                return ResponseEntity.badRequest().build();
-            }
-        }
-
-        agendamento.setStatusAgendamento(dto.status());
-
-        agendamentoRepository.save(agendamento);
+        agendamentoService.atualizarStatusAgendamento(
+                id,
+                dto
+        );
 
         return ResponseEntity.noContent().build();
     }
@@ -221,37 +202,7 @@ public class AgendamentoController {
             @PathVariable Long id,
             Authentication authentication
     ) {
-
-        String email = authentication.getName();
-
-        Paciente paciente =
-                pacienteRepository
-                        .findByEmailIgnoreCase(email)
-                        .orElseThrow();
-
-        Agendamento agendamento =
-                agendamentoRepository
-                        .findById(id)
-                        .orElseThrow();
-
-        if(!agendamento.getPaciente().getId()
-                        .equals(paciente.getId())
-        ){
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .build();
-        }
-
-        agendamentoRepository.delete(agendamento);
-
-        Long qntAgendada = agendamentoRepository.countByDataAndClinicaAndEspecialidade(agendamento.getData(), agendamento.getClinica(), agendamento.getEspecialidade());
-        List<Agendamento> filaDeEspera = agendamentoRepository.findByFilaDeEsperaAndDataAndClinicaAndEspecialidadeOrderByIdAsc(true, agendamento.getData(), agendamento.getClinica(), agendamento.getEspecialidade());
-
-        if(qntAgendada <= 4 && !filaDeEspera.isEmpty()){
-            Agendamento primeiroNaFila = filaDeEspera.getFirst();
-            primeiroNaFila.setFilaDeEspera(false);
-            agendamentoRepository.save(primeiroNaFila);
-        }
+        agendamentoService.deletarAgendamento(authentication.getName(), id);
 
         return ResponseEntity.noContent().build();
     }

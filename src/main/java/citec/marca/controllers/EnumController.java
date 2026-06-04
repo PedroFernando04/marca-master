@@ -58,6 +58,21 @@
                     .toList();
         }
 
+        @GetMapping("/clinicas/clinico-geral")
+        public List<ClinicaDTO> listarClinicasComClinicoGeral() {
+
+            return diaConsultorioRepository
+                    .findClinicasComClinicoGeral()
+                    .stream()
+                    .sorted(Comparator.comparing(EnumClinica::getDescricao))
+                    .map(c -> new ClinicaDTO(
+                            c.name(),
+                            c.getDescricao(),
+                            c.getEndereco()
+                    ))
+                    .toList();
+        }
+
         @GetMapping("/tiposFuncionario")
         public List<TipoFuncionarioDTO> listarTiposFuncionario() {
             return Arrays.stream(EnumTipoFuncionario.values())

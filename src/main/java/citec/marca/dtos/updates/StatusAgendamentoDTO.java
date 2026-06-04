@@ -1,8 +1,18 @@
 package citec.marca.dtos.updates;
 
 import citec.marca.entities.enums.EnumStatusAgendamento;
+import lombok.Getter;
+import lombok.Setter;
 
-public record StatusAgendamentoDTO (
-        EnumStatusAgendamento status
-) {}
+import java.beans.ConstructorProperties;
+
+@Getter
+@Setter
+public class StatusAgendamentoDTO {
+    private EnumStatusAgendamento status;
+
+    public StatusAgendamentoDTO(EnumStatusAgendamento status) {
+        this.status = status;
+    }
+}
 

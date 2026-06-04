@@ -1,3 +1,5 @@
+import Button from "../components/basicos/Button";
+
 import Header from "../components/utilitarios/Header";
 import SlideButton from "../components/utilitarios/SlideButton";
 
@@ -20,6 +22,8 @@ export default function Home(){
 
     const [pagina, setPagina] = useState(0);
     const [totalPaginas, setTotalPaginas] = useState(0);
+    const [paginaPaciente, setPaginaPaciente] = useState(0);
+    const [totalPaginasPaciente, setTotalPaginasPaciente] = useState(0);
 
     const [especialidade, setEspecialidade] = useState("");
     const [statusEncaminhamento, setStatusEncaminhamento] =useState("");
@@ -105,64 +109,19 @@ export default function Home(){
         }
 
         fetch(
-            "http://localhost:8080/api/agendamento/paciente",
+            `http://localhost:8080/api/agendamento/paciente?pagina=${paginaPaciente}`,
             {
                 credentials: "include"
             }
         )
             .then(response => response.json())
-            .then(data => setAgendamentos(data))
+            .then(data => {
+                setAgendamentos(data.content);
+                setTotalPaginasPaciente(data.totalPages);
+            })
             .catch(error => console.log(error));
 
-    }, [usuario]);
-
-    async function atualizarStatus(id, status){
-        try{
-
-            const response = await fetch(
-                `http://localhost:8080/api/agendamento/${id}/status`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        status
-                    })
-                }
-            );
-
-            if(!response.ok){
-
-                const erro = await response.text();
-
-                throw new Error(erro);
-            }
-
-            setAgendamentos((prev) =>
-
-                prev.map((agendamento) => {
-
-                    if(agendamento.id === id){
-
-                        return {
-                            ...agendamento,
-                            statusAgendamento: status
-                        };
-                    }
-
-                    return agendamento;
-                })
-            );
-
-        } catch(error){
-
-            console.log(error);
-
-            alert(error.message);
-        }
-    }
+    }, [usuario, paginaPaciente]);
 
     async function confirmarConsulta(id){
 
@@ -177,7 +136,7 @@ export default function Home(){
                     },
                     credentials: "include",
                     body: JSON.stringify({
-                        status: "CONFIRMADO"
+                    status: "CONFIRMADO"
                     })
                 }
             );
@@ -198,6 +157,55 @@ export default function Home(){
                         return {
                             ...agendamento,
                             statusAgendamento: "CONFIRMADO"
+                        };
+                    }
+
+                    return agendamento;
+                })
+            );
+
+        } catch(error){
+
+            console.log(error);
+
+            alert(error.message);
+        }
+    }
+
+    async function aguardarConsulta(id){
+
+        try{
+
+            const response = await fetch(
+                `http://localhost:8080/api/agendamento/${id}/status`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                    status: "AGUARDANDO"
+                    })
+                }
+            );
+
+            if(!response.ok){
+
+                throw new Error(
+                    "Erro ao aguardar consulta"
+                );
+            }
+
+            setAgendamentos((prev) =>
+
+                prev.map((agendamento) => {
+
+                    if(agendamento.id === id){
+
+                        return {
+                            ...agendamento,
+                            statusAgendamento: "AGUARDANDO"
                         };
                     }
 
@@ -285,12 +293,39 @@ export default function Home(){
                                         setAgendamentos={setAgendamentos}
                                         especialidades={especialidades}
                                         confirmarConsulta={confirmarConsulta}
+                                        aguardarConsulta={aguardarConsulta}
                                         cancelarConsulta={cancelarConsulta}
                                     />
 
                                 ))}
 
                             </div>
+
+                            {totalPaginasPaciente > 1 && (
+                                <div className="flex justify-center items-center gap-4 mt-6 bg-white p-3 rounded-3xl shadow-lg ">
+                                    <Button
+                                        disabled={paginaPaciente === 0}
+                                        onClick={() => setPaginaPaciente(paginaPaciente - 1)}
+                                        cor="fundo"
+                                        ajuste="px-4 py-2 rounded-lg disabled:opacity-40"
+                                    >
+                                        Anterior
+                                    </Button>
+
+                                    <span>
+                                        Página {paginaPaciente + 1} de {totalPaginasPaciente}
+                                    </span>
+
+                                    <Button
+                                        disabled={paginaPaciente + 1 >= totalPaginasPaciente}
+                                        onClick={() => setPaginaPaciente(paginaPaciente + 1)}
+                                        cor="fundo"
+                                        ajuste="px-4 py-2 rounded-lg disabled:opacity-40"
+                                    >
+                                        Próxima
+                                    </Button>
+                                </div>
+                            )}
 
                             <h1 className="p-6"></h1>
 
@@ -331,8 +366,6 @@ export default function Home(){
 
                                     especialidades={especialidades}
                                     statusEncaminhamentos={statusEncaminhamentos}
-
-                                    atualizarStatus={atualizarStatus}
 
                                     filaDeEspera={filaDeEspera}
                                     setFilaDeEspera={setFilaDeEspera}

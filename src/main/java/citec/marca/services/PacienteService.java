@@ -4,6 +4,7 @@ import citec.marca.dtos.records.DiaAgendaDTO;
 import citec.marca.entities.enums.EnumClinica;
 import citec.marca.entities.enums.EnumDiasSemana;
 import citec.marca.entities.enums.EnumEspecialidades;
+import citec.marca.entities.enums.EnumStatusAgendamento;
 import citec.marca.entities.tabelasAuxiliares.DiaConsultorio;
 import citec.marca.entities.tabelasAuxiliares.DiasLiberados;
 import citec.marca.entities.tabelasPrincipais.Paciente;
@@ -86,7 +87,14 @@ public class PacienteService {
                 )
                 .map(data -> new DiaAgendaDTO(
                         data.toString(),
-                        agendamentoRepository.countByDataAndClinicaAndEspecialidade(data, cli, esp) >= 4
+                        agendamentoRepository
+                                .countByDataAndClinicaAndEspecialidadeAndStatusAgendamentoNotAndFilaDeEspera(
+                                        data,
+                                        cli,
+                                        esp,
+                                        EnumStatusAgendamento.CANCELADO,
+                                        false)
+                                > 3
                 ))
                 .toList();
     }

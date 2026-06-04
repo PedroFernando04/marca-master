@@ -21,15 +21,20 @@ export default function Agendar() {
     const especialidadesFiltradas = especialidadesDaClinica.filter(e =>
         somenteClinico ? e.codigo === "GERAL" : e.codigo !== "GERAL"
     );
+    const especialidadeSelecionada = somenteClinico ? "GERAL" : especialidade;
 
-    console.log("somenteClinico:", somenteClinico);
-    console.log("especialidades:", especialidadesDaClinica);
-    console.log("filtradas:", especialidadesFiltradas);
+    
 
     useEffect(() => {
         async function carregarEnums() {
             try {
-                const resClinicas = await fetch("http://localhost:8080/api/enum/clinicas");
+                const endpoint = somenteClinico
+                    ? "http://localhost:8080/api/enum/clinicas/clinico-geral"
+                    : "http://localhost:8080/api/enum/clinicas";
+
+                const resClinicas = await fetch(endpoint, {
+                    credentials: "include"
+                });
                 const clinicasData = await resClinicas.json();
                 setClinicas(clinicasData);
             } catch (erro) {
@@ -38,7 +43,7 @@ export default function Agendar() {
         }
 
         carregarEnums();
-    }, []);
+    }, [somenteClinico]);
 
     useEffect(() => {
 
@@ -72,6 +77,8 @@ export default function Agendar() {
         setArquivo(e.target.files[0]);
     }
 
+    console.log(clinicas);
+
     return (
         <div className="min-h-screen">
             <Header />
@@ -81,41 +88,14 @@ export default function Agendar() {
                 <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border border-white/40">
 
                     <div>
-                        <h1 className="font-bold text-3xl text-gray-800">
-                            Agendar com <span className="bg-gradient-to-tr from-blue-500 to-violet-800 bg-clip-text text-transparent">
-                                Dr. Cleiton
-                            </span>
-                        </h1>
-
-                        <p className="text-gray-500 mt-1">
-                            Selecione um dia disponível na agenda abaixo
+                        <p className=" mt-1 font-bold">
+                            Preencha os campos abaixo para visualizar a Agenda
                         </p>
                     </div>
 
                     <Button cor="fundo" rota="/home">
-                        Retornar
+                        Voltar
                     </Button>
-                </div>
-
-                <div className="flex justify-center mt-6">
-                    <div className="flex items-center gap-6 bg-white/70 backdrop-blur-md px-6 py-3 rounded-xl shadow border border-white/40">
-
-                        <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full bg-blue-500"></div>
-                            <span className="text-sm text-gray-700 font-medium">Disponível</span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full bg-gray-300"></div>
-                            <span className="text-sm text-gray-700 font-medium">Ocupado</span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full bg-violet-800"></div>
-                            <span className="text-sm text-gray-700 font-medium">Lotado</span>
-                        </div>
-
-                    </div>
                 </div>
 
                 <div className="mt-8">
@@ -137,6 +117,7 @@ export default function Agendar() {
                                         setEspecialidade("");
                                         setArquivo(null);
                                     }}
+                                    opcoesFiltradas={clinicas}
                                 >
                                     <option value="">Selecione a clínica</option>
 
@@ -163,7 +144,7 @@ export default function Agendar() {
 
                                 <Select
                                     tipo="especialidade"
-                                    value={especialidade}
+                                    value={especialidadeSelecionada}
                                     onChange={setEspecialidade}
                                     opcoesFiltradas={especialidadesFiltradas}
                                 >
@@ -229,13 +210,39 @@ export default function Agendar() {
                         </div>
                     )}
 
+
                     {clinica && especialidade && (especialidade === "GERAL" || arquivo) && (
-                        <Agenda
-                            tipoAgenda="agendarConsulta"
-                            clinica={clinica}
-                            especialidade={especialidade}
-                            arquivo={arquivo}
-                        />
+                        <div>
+
+                            <div className="flex justify-center mt-6 mb-6">
+                                <div className="flex items-center gap-6 bg-white/70 backdrop-blur-md px-6 py-3 rounded-xl shadow border border-white/40">
+
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-4 h-4 rounded-full bg-blue-500"></div>
+                                        <span className="text-sm text-gray-700 font-medium">Disponível</span>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-4 h-4 rounded-full bg-gray-300"></div>
+                                        <span className="text-sm text-gray-700 font-medium">Ocupado</span>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-4 h-4 rounded-full bg-violet-800"></div>
+                                        <span className="text-sm text-gray-700 font-medium">Lotado</span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <Agenda
+                                tipoAgenda="agendarConsulta"
+                                clinica={clinica}
+                                especialidade={especialidade}
+                                arquivo={arquivo}
+                            />
+
+                        </div>
                     )}
 
                 </div>
