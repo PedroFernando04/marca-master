@@ -26,7 +26,8 @@ export default function Home(){
     const [totalPaginasPaciente, setTotalPaginasPaciente] = useState(0);
 
     const [especialidade, setEspecialidade] = useState("");
-    const [statusEncaminhamento, setStatusEncaminhamento] =useState("");
+    const [statusEncaminhamento, setStatusEncaminhamento] = useState("");
+    const [statusAgendamento, setStatusAgendamento] = useState("");
     const [dataConsulta, setDataConsulta] = useState("");
     const [filaDeEspera, setFilaDeEspera] = useState("");
 
@@ -44,6 +45,10 @@ export default function Home(){
 
         if(statusEncaminhamento !== ""){
             url += `&statusEncaminhamento=${statusEncaminhamento}`;
+        }
+
+        if(statusAgendamento !== ""){
+            url += `&statusAgendamento=${statusAgendamento}`;
         }
 
         if (dataConsulta !== "") {
@@ -72,12 +77,15 @@ export default function Home(){
         statusEncaminhamento,
         usuario,
         dataConsulta,
-        filaDeEspera
+        filaDeEspera,
+        statusAgendamento
     ]);
 
     const [especialidades, setEspecialidades] = useState([]);
 
     const [statusEncaminhamentos, setStatusEncaminhamentos] = useState([]);
+
+    const [statusAgendamentos, setStatusAgendamentos] = useState([]);
 
     useEffect(() => {
         fetch(
@@ -99,6 +107,17 @@ export default function Home(){
             .then(response => response.json())
             .then(data => setStatusEncaminhamentos(data))
             .catch(error => console.log(error));
+
+        fetch(
+            "http://localhost:8080/api/enum/statusAgendamento",
+            {
+                credentials: "include"
+            }
+        )
+            .then(response => response.json())
+            .then(data => setStatusAgendamentos(data))
+            .catch(error => console.log(error));
+
 
     }, []);
 
@@ -341,7 +360,7 @@ export default function Home(){
                     <SlideButton
                         onChange={setAba}
                         texto1={"Encaminhamentos"}
-                        texto2={"Calendário"}
+                        texto2={usuario?.tipoFuncionario === "RESPONSAVEL" ? "Calendário" : "Encaixar Consulta"}
                     />
 
                     {aba === "agendamento" && (
@@ -361,11 +380,15 @@ export default function Home(){
                                     statusEncaminhamento={statusEncaminhamento}
                                     setStatusEncaminhamento={setStatusEncaminhamento}
 
+                                    statusAgendamento={statusAgendamento}
+                                    setStatusAgendamento={setStatusAgendamento}
+
                                     dataConsulta={dataConsulta}
                                     setDataConsulta={setDataConsulta}
 
                                     especialidades={especialidades}
                                     statusEncaminhamentos={statusEncaminhamentos}
+                                    statusAgendamentos={statusAgendamentos}
 
                                     filaDeEspera={filaDeEspera}
                                     setFilaDeEspera={setFilaDeEspera}
@@ -375,7 +398,8 @@ export default function Home(){
                         </div>
                     )}
 
-                    {aba === "consultas" && (
+                    {aba === "consultas" && usuario?.tipoFuncionario === "RESPONSAVEL" &&(
+
                         <div>
 
                             <div className="flex justify-center mt-8 px-4">
@@ -384,6 +408,18 @@ export default function Home(){
                                     tipoAgenda={"liberarDias"}
                                     clinica={usuario?.clinica}
                                 />
+                            </div>
+
+                        </div>
+                    )}
+
+                    {aba === "consultas" && usuario?.tipoFuncionario === "ATENDENTE" &&(
+
+                        <div>
+
+                            <div className="flex flex-col md:flex-row justify-center items-center gap-4 px-4">
+                                <Card tipo="geral" />
+                                <Card tipo="especialista" />
                             </div>
 
                         </div>

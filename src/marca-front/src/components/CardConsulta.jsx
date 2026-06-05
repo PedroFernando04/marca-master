@@ -360,8 +360,14 @@ export default function CardConsulta({
               </button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
+            <div 
+                className="
+                  grid
+                  grid-cols-1
+                  lg:grid-cols-2
+                  gap-8
+                ">
+              <div >
                 <p className="text-gray-500 text-sm">Clínica</p>
 
                 <p className="font-semibold">{agendamento.clinica}</p>
@@ -426,7 +432,65 @@ export default function CardConsulta({
                   )}
                 </div>
               </div>
+
+                  {agendamento.encaminhamentoMedicoPath && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Encaminhamento</p>
+
+                    <button
+                      onClick={() => window.open(urlEncaminhamento, "_blank")}
+                      className="
+                        w-full
+
+                        h-[180px]
+                        sm:h-[220px]
+
+                        border
+                        rounded-2xl
+                        overflow-hidden
+
+                        bg-gray-50
+                        hover:opacity-90
+                        transition
+
+                        flex items-center
+                        justify-center
+                      "
+                    >
+                      {ehImagem(
+                        agendamento.encaminhamentoMedicoPath,
+                      ) ? (
+                        <img
+                          src={urlEncaminhamento}
+                          alt="Encaminhamento"
+                          className="
+                            w-full
+                            h-full
+                            object-cover
+                          "
+                        />
+                      ) : (
+                        <div
+                          className="
+                            flex flex-col
+                            items-center
+                            justify-center
+                            gap-3
+                            text-gray-600
+                          "
+                        >
+                          <span className="text-5xl">📄</span>
+
+                          <span className="text-sm font-medium">Abrir PDF</span>
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                )}
+
             </div>
+
+            
 
             <div className="mt-8">
               <p className="text-gray-500 text-sm mb-2">Observações</p>

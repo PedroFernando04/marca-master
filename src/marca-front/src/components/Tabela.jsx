@@ -16,11 +16,15 @@ export default function Tabela({
   statusEncaminhamento,
   setStatusEncaminhamento,
 
+  statusAgendamento,
+  setStatusAgendamento,
+
   dataConsulta,
   setDataConsulta,
 
   especialidades,
   statusEncaminhamentos,
+  statusAgendamentos,
 
   filaDeEspera,
   setFilaDeEspera
@@ -224,24 +228,62 @@ export default function Tabela({
               setPagina(0);
             }}
             className="
-                            bg-white/80
-                            border border-gray-200
-                            rounded-xl
-                            px-4 py-3
-                            shadow-sm
-                            outline-none
-                            transition
-                            focus:ring-2
-                            focus:ring-blue-400
-                            focus:border-blue-400
-                            hover:border-blue-300
-                            text-gray-700
-                            font-medium
-                        "
+              bg-white/80
+              border border-gray-200
+              rounded-xl
+              px-4 py-3
+              shadow-sm
+              outline-none
+              transition
+              focus:ring-2
+              focus:ring-blue-400
+              focus:border-blue-400
+              hover:border-blue-300
+              text-gray-700
+              font-medium
+            "
           >
             <option value="">Todos status</option>
 
             {statusEncaminhamentos.map((status) => (
+              <option key={status.codigo} value={status.codigo}>
+                {status.descricao}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-2 min-w-[220px]">
+          <label className="text-sm font-semibold text-gray-700 ml-1">
+            Status do Agendamento
+          </label>
+
+          <select
+            value={statusAgendamento}
+            onChange={(e) => {
+              setStatusAgendamento(e.target.value);
+
+              setPagina(0);
+            }}
+            className="
+              bg-white/80
+              border border-gray-200
+              rounded-xl
+              px-4 py-3
+              shadow-sm
+              outline-none
+              transition
+              focus:ring-2
+              focus:ring-blue-400
+              focus:border-blue-400
+              hover:border-blue-300
+              text-gray-700
+              font-medium
+            "
+          >
+            <option value="">Todos status</option>
+
+            {statusAgendamentos.map((status) => (
               <option key={status.codigo} value={status.codigo}>
                 {status.descricao}
               </option>
@@ -317,6 +359,7 @@ export default function Tabela({
                 onClick={() => {
                     setEspecialidade("");
                     setStatusEncaminhamento("");
+                    setStatusAgendamento("");
                     setDataConsulta("");
                     setFilaDeEspera("");
                     setPagina(0);
@@ -441,7 +484,7 @@ export default function Tabela({
       </div>
 
       {totalPaginas > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-5 bg-white p-3 rounded-3xl shadow-lg">
+        <div className="flex justify-center items-center gap-4 mt-5 bg-white/80 p-3 rounded-3xl shadow-lg">
           <Button
             disabled={pagina === 0}
             onClick={() => setPagina(pagina - 1)}
@@ -618,58 +661,60 @@ export default function Tabela({
                   </div>
                 </div>
 
-                <div>
-                  <p className="text-sm text-gray-500 mb-2">Encaminhamento</p>
+                {agendamentoSelecionado.encaminhamentoMedicoPath && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Encaminhamento</p>
 
-                  <button
-                    onClick={() => window.open(urlEncaminhamento, "_blank")}
-                    className="
-                      w-full
+                    <button
+                      onClick={() => window.open(urlEncaminhamento, "_blank")}
+                      className="
+                        w-full
 
-                      h-[180px]
-                      sm:h-[220px]
+                        h-[180px]
+                        sm:h-[220px]
 
-                      border
-                      rounded-2xl
-                      overflow-hidden
+                        border
+                        rounded-2xl
+                        overflow-hidden
 
-                      bg-gray-50
-                      hover:opacity-90
-                      transition
+                        bg-gray-50
+                        hover:opacity-90
+                        transition
 
-                      flex items-center
-                      justify-center
-                    "
-                  >
-                    {ehImagem(
-                      agendamentoSelecionado.encaminhamentoMedicoPath,
-                    ) ? (
-                      <img
-                        src={urlEncaminhamento}
-                        alt="Encaminhamento"
-                        className="
-                          w-full
-                          h-full
-                          object-cover
-                        "
-                      />
-                    ) : (
-                      <div
-                        className="
-                          flex flex-col
-                          items-center
-                          justify-center
-                          gap-3
-                          text-gray-600
-                        "
-                      >
-                        <span className="text-5xl">📄</span>
+                        flex items-center
+                        justify-center
+                      "
+                    >
+                      {ehImagem(
+                        agendamentoSelecionado.encaminhamentoMedicoPath,
+                      ) ? (
+                        <img
+                          src={urlEncaminhamento}
+                          alt="Encaminhamento"
+                          className="
+                            w-full
+                            h-full
+                            object-cover
+                          "
+                        />
+                      ) : (
+                        <div
+                          className="
+                            flex flex-col
+                            items-center
+                            justify-center
+                            gap-3
+                            text-gray-600
+                          "
+                        >
+                          <span className="text-5xl">📄</span>
 
-                        <span className="text-sm font-medium">Abrir PDF</span>
-                      </div>
-                    )}
-                  </button>
-                </div>
+                          <span className="text-sm font-medium">Abrir PDF</span>
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="mt-8">

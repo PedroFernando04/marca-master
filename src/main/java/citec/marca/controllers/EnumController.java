@@ -1,19 +1,13 @@
     package citec.marca.controllers;
 
-    import citec.marca.dtos.enums.ClinicaDTO;
-    import citec.marca.dtos.enums.EspecialidadeDTO;
-    import citec.marca.dtos.enums.StatusEncaminhamentoDTO;
-    import citec.marca.dtos.enums.TipoFuncionarioDTO;
-    import citec.marca.entities.enums.EnumClinica;
-    import citec.marca.entities.enums.EnumEspecialidades;
-    import citec.marca.entities.enums.EnumStatusEncaminhamento;
-    import citec.marca.entities.enums.EnumTipoFuncionario;
+    import citec.marca.dtos.enums.*;
+    import citec.marca.dtos.records.PacienteDTO;
+    import citec.marca.entities.enums.*;
+    import citec.marca.entities.tabelasPrincipais.Paciente;
     import citec.marca.repositories.tabelasAuxiliares.DiaConsultorioRepository;
+    import citec.marca.repositories.tabelasPrincipais.PacienteRepository;
     import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.web.bind.annotation.GetMapping;
-    import org.springframework.web.bind.annotation.PathVariable;
-    import org.springframework.web.bind.annotation.RequestMapping;
-    import org.springframework.web.bind.annotation.RestController;
+    import org.springframework.web.bind.annotation.*;
 
     import java.util.Arrays;
     import java.util.Comparator;
@@ -25,6 +19,9 @@
 
         @Autowired
         private DiaConsultorioRepository diaConsultorioRepository;
+
+        @Autowired
+        private PacienteRepository pacienteRepository;
 
         @GetMapping("/especialidades")
         public List<EspecialidadeDTO> listarEspecialidades() {
@@ -94,6 +91,36 @@
                     .map(e -> new StatusEncaminhamentoDTO(
                             e.name(),
                             e.getDescricao()
+                    ))
+                    .toList();
+        }
+
+        @GetMapping("/statusAgendamento")
+        public List<StatusAgendamentoDTO>
+        listarStatusAgendamento() {
+
+            return Arrays.stream(
+                            EnumStatusAgendamento.values()
+                    )
+                    .sorted(Comparator.comparing(
+                            EnumStatusAgendamento::getDescricao
+                    ))
+                    .map(e -> new StatusAgendamentoDTO(
+                            e.name(),
+                            e.getDescricao()
+                    ))
+                    .toList();
+        }
+
+        @GetMapping("/pacientes")
+        public List<PacienteDTO>
+        listarPacientes(@RequestParam String nome) {
+            return pacienteRepository.findTop20ByNomeContainingIgnoreCase(nome)
+                    .stream()
+                    .sorted(Comparator.comparing(Paciente::getNome))
+                    .map(p -> new PacienteDTO(
+                            p.getId(),
+                            p.getNome()
                     ))
                     .toList();
         }

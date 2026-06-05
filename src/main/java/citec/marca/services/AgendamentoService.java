@@ -18,10 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,7 +31,7 @@ public class AgendamentoService {
     @Autowired
     private AgendamentoRepository agendamentoRepository;
 
-    public void agendarConsulta(AgendarConsultaRequest request) throws IOException {
+    public Agendamento agendarConsulta(AgendarConsultaRequest request) throws IOException {
 
         Paciente paciente = pacienteRepository.findById(request.getPacienteId()).orElseThrow();
 
@@ -76,7 +73,11 @@ public class AgendamentoService {
         agendamento.setTipo(tipo);
         agendamento.setEncaminhamentoMedicoPath(caminhoArquivo);
         agendamento.setStatusAgendamento(EnumStatusAgendamento.AGUARDANDO);
-        agendamento.setStatusEncaminhamento(EnumStatusEncaminhamento.AGUARDANDO);
+        agendamento.setStatusEncaminhamento(
+                caminhoArquivo == null
+                        ? EnumStatusEncaminhamento.APROVADO
+                        : EnumStatusEncaminhamento.AGUARDANDO
+        );
 
         Long quantidadeDeAgendamentos = agendamentoRepository
                 .countByDataAndClinicaAndEspecialidadeAndStatusAgendamentoNotAndFilaDeEspera(
@@ -86,7 +87,7 @@ public class AgendamentoService {
                         false);
         agendamento.setFilaDeEspera(quantidadeDeAgendamentos > 3);
 
-        agendamentoRepository.save(agendamento);
+        return agendamentoRepository.save(agendamento);
     }
 
     public void deletarAgendamento(String email, Long id){

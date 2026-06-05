@@ -5,6 +5,7 @@ import Select from "../components/basicos/Select";
 
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import UsuarioLogado from "../config/UsuarioLogado";
 
 export default function Agendar() {
     const [clinica, setClinica] = useState("");
@@ -23,7 +24,7 @@ export default function Agendar() {
     );
     const especialidadeSelecionada = somenteClinico ? "GERAL" : especialidade;
 
-    
+    const usuario = UsuarioLogado().usuario;
 
     useEffect(() => {
         async function carregarEnums() {
@@ -78,6 +79,8 @@ export default function Agendar() {
     }
 
     console.log(clinicas);
+
+    const [paciente, setPaciente] = useState("");
 
     return (
         <div className="min-h-screen">
@@ -160,6 +163,29 @@ export default function Agendar() {
                                 </Select>
                             </div>
 
+                            {usuario?.tipoFuncionario === "ATENDENTE" && (
+                            <div className="flex flex-col">
+                                <label className="text-sm font-semibold text-gray-700 mb-2">
+                                    Paciente
+                                </label>
+
+                                <Select
+                                    tipo="paciente"
+                                    busca={true}
+                                    value={paciente}
+                                    onChange={setPaciente}
+                                >
+                                    <option value="">Informe o paciente</option>
+
+                                    {clinicas.map(c => (
+                                        <option key={c.codigo} value={c.codigo}>
+                                            {c.descricao}
+                                        </option>
+                                    ))}
+                                </Select>
+                            </div>
+                        )}
+
                         </div>
 
                         {especialidade !== "GERAL" && (
@@ -202,6 +228,8 @@ export default function Agendar() {
                             </div>
                         )}
 
+                        
+
                     </div>
 
                     {(!clinica || !especialidade || (encaminhamentoObrigatorio && !arquivo)) && (
@@ -211,7 +239,7 @@ export default function Agendar() {
                     )}
 
 
-                    {clinica && especialidade && (especialidade === "GERAL" || arquivo) && (
+                    {clinica && especialidade && (especialidade === "GERAL" || arquivo || (usuario?.tipoFuncionario === "ATENDENTE" && paciente)) && (
                         <div>
 
                             <div className="flex justify-center mt-6 mb-6">
@@ -240,6 +268,7 @@ export default function Agendar() {
                                 clinica={clinica}
                                 especialidade={especialidade}
                                 arquivo={arquivo}
+                                pacienteId={paciente}
                             />
 
                         </div>

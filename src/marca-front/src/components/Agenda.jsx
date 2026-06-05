@@ -28,6 +28,7 @@ export default function Agenda({
   clinica,
   especialidade,
   arquivo,
+  pacienteId
 }) {
   const navigate = useNavigate();
 
@@ -86,7 +87,15 @@ export default function Agenda({
 
       const formData = new FormData();
 
-      formData.append("pacienteId", String(usuario?.id));
+      const idPaciente =
+        usuario?.tipoFuncionario === "ATENDENTE"
+            ? pacienteId
+            : usuario?.id;
+
+      formData.append(
+          "pacienteId",
+          String(idPaciente)
+      );
 
       formData.append("clinica", clinica);
 
@@ -98,13 +107,18 @@ export default function Agenda({
         formData.append("arquivo", arquivo);
       }
 
+      const endpoint =
+        usuario?.tipoFuncionario === "ATENDENTE"
+            ? "http://localhost:8080/api/funcionario/encaixarConsulta"
+            : "http://localhost:8080/api/paciente/agendar";
+
       const response = await fetch(
-        "http://localhost:8080/api/paciente/agendar",
+        endpoint,
         {
-          method: "POST",
-          credentials: "include",
-          body: formData,
-        },
+            method: "POST",
+            credentials: "include",
+            body: formData
+        }
       );
 
       if (!response.ok) {
@@ -293,18 +307,18 @@ export default function Agenda({
               key={i}
               onClick={() => handleClickDia(dia, ocupado, lotado)}
               className={`
-                                h-10 md:h-16 flex items-center justify-center rounded-md border
-                                ${fimDeSemana || passado ? "cursor-not-allowed bg-gray-300" : "cursor-pointer"}
-                                ${
-                                  fimDeSemana || passado
-                                    ? "bg-gray-300 text-gray-500"
-                                    : lotado
-                                      ? "bg-violet-700 text-white"
-                                      : liberado
-                                        ? "bg-blue-600 text-white hover:bg-blue-500"
-                                        : "bg-gray-200 text-gray-500"
-                                }
-                            `}
+                h-10 md:h-16 flex items-center justify-center rounded-md border
+                ${fimDeSemana || passado ? "cursor-not-allowed bg-gray-300" : "cursor-pointer"}
+                ${
+                  fimDeSemana || passado
+                    ? "bg-gray-300 text-gray-500"
+                    : lotado
+                      ? "bg-violet-700 text-white"
+                      : liberado
+                        ? "bg-blue-600 text-white hover:bg-blue-500"
+                        : "bg-gray-200 text-gray-500"
+                }
+            `}
             >
               {dia}
             </div>

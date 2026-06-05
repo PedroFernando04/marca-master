@@ -30,10 +30,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/agendamento")
@@ -57,6 +54,7 @@ public class AgendamentoController {
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(required = false) EnumEspecialidades especialidade,
             @RequestParam(required = false) EnumStatusEncaminhamento statusEncaminhamento,
+            @RequestParam(required = false) EnumStatusAgendamento statusAgendamento,
             @RequestParam(required = false) LocalDate data,
             @RequestParam(required = false) Boolean filaDeEspera
     ) {
@@ -77,6 +75,13 @@ public class AgendamentoController {
             spec = spec.and(
                     AgendamentoSpecification
                             .statusEncaminhamentoEquals(statusEncaminhamento)
+            );
+        }
+
+        if(statusAgendamento != null){
+            spec = spec.and(
+                    AgendamentoSpecification
+                            .statusAgendamentoEquals(statusAgendamento)
             );
         }
 

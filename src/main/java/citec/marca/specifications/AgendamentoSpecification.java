@@ -2,6 +2,7 @@ package citec.marca.specifications;
 
 import citec.marca.entities.enums.EnumClinica;
 import citec.marca.entities.enums.EnumEspecialidades;
+import citec.marca.entities.enums.EnumStatusAgendamento;
 import citec.marca.entities.enums.EnumStatusEncaminhamento;
 import citec.marca.entities.tabelasAuxiliares.Agendamento;
 
@@ -30,6 +31,13 @@ public class AgendamentoSpecification {
     ) {
         return (root, query, cb) ->
                 cb.equal(root.get("statusEncaminhamento"), status);
+    }
+
+    public static Specification<Agendamento> statusAgendamentoEquals(
+            EnumStatusAgendamento status
+    ) {
+        return (root, query, cb) ->
+                cb.equal(root.get("statusAgendamento"), status);
     }
 
     public static Specification<Agendamento> dataEquals(
