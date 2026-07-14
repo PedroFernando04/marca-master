@@ -124,4 +124,18 @@
                     ))
                     .toList();
         }
+
+        @GetMapping("/clinicas/{especialidade}")
+        public List<ClinicaDTO> listarClinicasPorEspecialidade(
+                @PathVariable String especialidade
+        ) {
+            EnumEspecialidades enumEspecialidade = EnumEspecialidades.valueOf(especialidade.trim());
+
+            return diaConsultorioRepository
+                    .findDistinctClinicasByEspecialidade(enumEspecialidade)
+                    .stream()
+                    .sorted(Comparator.comparing(EnumClinica::getDescricao))
+                    .map(c -> new ClinicaDTO(c.name(), c.getDescricao(), c.getEndereco()))
+                    .toList();
+        }
     }

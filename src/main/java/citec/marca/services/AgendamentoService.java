@@ -34,12 +34,21 @@ public class AgendamentoService {
     public Agendamento agendarConsulta(AgendarConsultaRequest request) throws IOException {
 
         Paciente paciente = pacienteRepository.findById(request.getPacienteId()).orElseThrow();
-
         EnumEspecialidades especialidade = EnumEspecialidades.valueOf(request.getEspecialidade());
-
         boolean jaExiste = agendamentoRepository.existsByPacienteAndEspecialidade(paciente,especialidade);
-
         EnumTipoAgendamento tipo = jaExiste ? EnumTipoAgendamento.RETORNO : EnumTipoAgendamento.PRIMEIRA_CONSULTA;
+
+        boolean jaTemAgendamento = agendamentoRepository
+                .existsByPacienteAndEspecialidadeAndDataGreaterThanEqualAndStatusAgendamentoNot(
+                        paciente,
+                        especialidade,
+                        LocalDate.now(),
+                        EnumStatusAgendamento.CANCELADO
+                );
+
+        if (jaTemAgendamento) {
+            throw new IllegalStateException("Paciente já possui agendamento vigente para essa especialidade.");
+        }
 
         String caminhoArquivo = null;
 
@@ -78,7 +87,7 @@ public class AgendamentoService {
                         ? EnumStatusEncaminhamento.APROVADO
                         : EnumStatusEncaminhamento.AGUARDANDO
         );
-
+        agendamento.setTurno(EnumTurnos.valueOf(request.getTurno()));
         Long quantidadeDeAgendamentos = agendamentoRepository
                 .countByDataAndClinicaAndEspecialidadeAndStatusAgendamentoNotAndFilaDeEspera(
                         LocalDate.parse(request.getData()),

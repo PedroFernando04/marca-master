@@ -1,5 +1,6 @@
 package citec.marca.services;
 
+import citec.marca.dtos.records.DiaLiberadoDTO;
 import citec.marca.dtos.requests.LiberarDiaRequest;
 import citec.marca.entities.enums.*;
 import citec.marca.entities.tabelasAuxiliares.DiasLiberados;
@@ -32,7 +33,7 @@ public class FuncionarioService {
         Optional<Funcionario> emailBuscado = funcionarioRepository.findByEmailIgnoreCase(funcionario.getEmail());
 
         if (matriculaBuscado.isPresent()) {
-            throw new IllegalArgumentException("CPF já cadstrado");
+            throw new IllegalArgumentException("Matrícula já cadstrado");
         }
         if (emailBuscado.isPresent()) {
             throw new IllegalArgumentException("Email já cadastrado");
@@ -75,7 +76,7 @@ public class FuncionarioService {
         }
     }
 
-    public List<String> buscarDiasLiberadosClinica(String clinica, Integer mes, Integer ano){
+    public List<DiaLiberadoDTO> buscarDiasLiberadosClinica(String clinica, Integer mes, Integer ano){
         EnumClinica cli = EnumClinica.valueOf(clinica);
 
         LocalDate inicio = LocalDate.of(ano, mes, 1);
@@ -84,7 +85,29 @@ public class FuncionarioService {
         return diasLiberadosRepository
                 .findByClinicaAndDataBetween(cli, inicio, fim)
                 .stream()
-                .map(d -> d.getData().toString()) // yyyy-MM-dd
+                .map(d -> new DiaLiberadoDTO(
+                        d.getData().toString(),
+                        d.getTurnoManha(),
+                        d.getTurnoTarde()
+                ))
                 .toList();
+    }
+
+    @Transactional
+    public void atualizarTurno(String clinica, String data, Boolean turnoManha, Boolean turnoTarde) {
+        EnumClinica cli = EnumClinica.valueOf(clinica);
+        LocalDate dataConvertida = LocalDate.parse(data);
+
+        DiasLiberados dia = diasLiberadosRepository
+                .findByDataAndClinica(dataConvertida, cli)
+                .orElseThrow(() -> new IllegalArgumentException("Dia não encontrado"));
+
+        if (!turnoManha && !turnoTarde) {
+            diasLiberadosRepository.delete(dia);
+        } else {
+            dia.setTurnoManha(turnoManha);
+            dia.setTurnoTarde(turnoTarde);
+            diasLiberadosRepository.save(dia);
+        }
     }
 }

@@ -32,4 +32,11 @@ public interface DiaConsultorioRepository extends JpaRepository<DiaConsultorio, 
     """)
     List<EnumClinica> findClinicasComClinicoGeral();
 
+    @Query("""
+        select distinct d.clinica
+        from DiaConsultorio d
+        where d.especialidade = :especialidade
+    """)
+    List<EnumClinica> findDistinctClinicasByEspecialidade(@Param("especialidade") EnumEspecialidades especialidade);
+
 }

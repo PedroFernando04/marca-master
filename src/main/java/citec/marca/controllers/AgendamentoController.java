@@ -3,9 +3,7 @@ package citec.marca.controllers;
 import citec.marca.dtos.records.AgendamentoDTO;
 import citec.marca.dtos.updates.EncaminhamentoDTO;
 import citec.marca.dtos.updates.StatusAgendamentoDTO;
-import citec.marca.entities.enums.EnumEspecialidades;
-import citec.marca.entities.enums.EnumStatusAgendamento;
-import citec.marca.entities.enums.EnumStatusEncaminhamento;
+import citec.marca.entities.enums.*;
 import citec.marca.entities.tabelasAuxiliares.Agendamento;
 import citec.marca.entities.tabelasPrincipais.Funcionario;
 import citec.marca.entities.tabelasPrincipais.Paciente;
@@ -62,7 +60,12 @@ public class AgendamentoController {
 
         Funcionario funcionario = funcionarioRepository.findByEmailIgnoreCase(email).orElseThrow();
 
-        Specification<Agendamento> spec = AgendamentoSpecification.clinicaEquals(funcionario.getClinica());
+        EnumClinica clinicaFiltro =
+                funcionario.getTipoFuncionario().equals(EnumTipoFuncionario.ATENDENTE)
+                        ? funcionario.getClinica()
+                        : null;
+
+        Specification<Agendamento> spec = AgendamentoSpecification.clinicaEquals(clinicaFiltro);
 
         if(especialidade != null){
             spec = spec.and(
@@ -114,7 +117,8 @@ public class AgendamentoController {
                                 agendamento.getEncaminhamentoMedicoPath(),
                                 agendamento.getStatusAgendamento(),
                                 agendamento.getClinica(),
-                                agendamento.getFilaDeEspera()
+                                agendamento.getFilaDeEspera(),
+                                agendamento.getTurno()
                         ));
 
         return ResponseEntity.ok(resultado);
@@ -181,7 +185,8 @@ public class AgendamentoController {
                                 agendamento.getEncaminhamentoMedicoPath(),
                                 agendamento.getStatusAgendamento(),
                                 agendamento.getClinica(),
-                                agendamento.getFilaDeEspera()
+                                agendamento.getFilaDeEspera(),
+                                agendamento.getTurno()
                         ));
 
         return ResponseEntity.ok(agendamentos);

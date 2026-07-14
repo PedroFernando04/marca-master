@@ -160,24 +160,24 @@ export default function Tabela({
   }
 
   return (
-    <div className="w-full lg:w-[80%]">
+    <div className="max-w-full lg:w-fit">
       <div
-      className="
-        flex flex-col lg:flex-row
-        lg:justify-between
-        lg:items-end
-        gap-5
-        mt-8 mb-5
-        bg-white/60
-        backdrop-blur-md
-        rounded-2xl
-        border border-white/40
-        shadow-lg
-        p-5
-        overflow-hidden
-      "
-    >
-        <div className="flex flex-col gap-2 min-w-[220px]">
+        className="
+          flex flex-col lg:flex-row
+          lg:justify-between
+          lg:items-end
+          gap-5
+          mt-8 mb-5
+          bg-white
+          backdrop-blur-md
+          rounded-2xl
+          border border-white/40
+          shadow-lg
+          p-5
+          overflow-hidden
+        "
+      >
+          <div className="flex flex-col gap-2 min-w-[220px]">
           <label className="text-sm font-semibold text-gray-700 ml-1">
             Especialidade
           </label>
@@ -370,12 +370,17 @@ export default function Tabela({
         </div>
       </div>
 
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl min-h-[412px] border border-white/40 overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
+      <div className="bg-white/80 rounded-2xl shadow-xl min-h-[412px] border border-white/40 overflow-hidden w-full">
+        <table className="w-full border-separate border-spacing-0">
+          <thead className="
+              bg-gradient-to-tr from-blue-500 to-violet-800
+               ">
             <tr
-              className="text-white text-sm uppercase tracking-wide 
-                                       bg-gradient-to-tr from-blue-500 to-violet-800"
+              className="text-white 
+              text-sm 
+              uppercase 
+              tracking-wide 
+              "
             >
               <th className="p-4 text-center">Data</th>
 
@@ -387,7 +392,7 @@ export default function Tabela({
               
               <th className="p-4 text-center">Confirmação</th>
 
-              <th className="p-4 text-center">Observações</th>
+              <th className="p-4 text-center ">Observações</th>
 
               <th className="p-4 text-center">Ações</th>
             </tr>
@@ -416,9 +421,9 @@ export default function Tabela({
                 </td>
 
                 <td className="flex p-4 justify-center">
-                  <div className="flex flex-col gap-1 ">
+                  <div className="flex flex-col ">
                     <span
-                      className={`px-3 py-1 text-xs rounded-full font-semibold w-fit ${corStatus(
+                      className={`px-3 py-1 mt-2 text-xs rounded-full font-semibold w-fit ${corStatus(
                         agendamento.statusEncaminhamento,
                       )}`}
                     >
@@ -454,7 +459,14 @@ export default function Tabela({
                     </span>
                 </td>
 
-                <td className="p-4 text-center">{agendamento.descricaoEncaminhamento}</td>
+                <td className="
+                  p-4 
+                  text-center 
+                  truncate  
+                  max-w-[200px]
+                  ">
+                    {agendamento.descricaoEncaminhamento}
+                </td>
 
                 <td className="p-4 text-center">
                   <Button

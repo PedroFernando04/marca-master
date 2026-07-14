@@ -103,13 +103,6 @@ export default function Select({tipo, ajuste, value, onChange, opcoesFiltradas, 
         return () => clearTimeout(timer);
     }, [textoBusca, busca, cfg.link]);
 
-    console.log("textoBusca:", textoBusca);
-console.log("opcoes:", opcoes);
-console.log("opcoesExibidas:", opcoesExibidas);
-console.log("mostrarLista:", mostrarLista);
-
-
-
     if(busca){
         return(
             <div className={`relative ${ajuste}`}>

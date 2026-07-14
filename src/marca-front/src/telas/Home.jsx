@@ -1,4 +1,5 @@
 import Button from "../components/basicos/Button";
+import Select from "../components/basicos/Select";
 
 import Header from "../components/utilitarios/Header";
 import SlideButton from "../components/utilitarios/SlideButton";
@@ -30,6 +31,8 @@ export default function Home(){
     const [statusAgendamento, setStatusAgendamento] = useState("");
     const [dataConsulta, setDataConsulta] = useState("");
     const [filaDeEspera, setFilaDeEspera] = useState("");
+
+    
 
     useEffect(() => {
 
@@ -272,6 +275,31 @@ export default function Home(){
         }
     }
 
+    
+    const [clinica, setClinica] = useState("");
+    const [clinicas, setClinicas] = useState([]);
+    const somenteClinico = location.state?.clinicoGeral;
+
+    useEffect(() => {
+        async function carregarEnums() {
+            try {
+                const endpoint = somenteClinico
+                    ? "http://localhost:8080/api/enum/clinicas/clinico-geral"
+                    : "http://localhost:8080/api/enum/clinicas";
+
+                const resClinicas = await fetch(endpoint, {
+                    credentials: "include"
+                });
+                const clinicasData = await resClinicas.json();
+                setClinicas(clinicasData);
+            } catch (erro) {
+                console.error("Erro ao carregar enums:", erro);
+            }
+        }
+
+        carregarEnums();
+    }, [somenteClinico]);
+
     return(
         <div className="min-h-screen overflow-x-hidden">
 
@@ -400,17 +428,70 @@ export default function Home(){
 
                     {aba === "consultas" && usuario?.tipoFuncionario === "RESPONSAVEL" &&(
 
-                        <div>
+                            <div>
+                                <div className="flex justify-center">
+                                    <div
+                                        className="
+                                        flex flex-col lg:flex-row
+                                        lg:justify-between
+                                        lg:items-end
+                                        gap-5
+                                        mt-8 mb-5
+                                        bg-white
+                                        backdrop-blur-md
+                                        rounded-2xl
+                                        border border-white/40
+                                        shadow-lg
+                                        p-5
+                                        overflow-hidden
+                                        "
+                                    >
+                                        <div className="flex flex-col gap-2 min-w-[220px]">
+                                            <label className="text-sm font-semibold text-gray-700 ml-1">
+                                                Clínica
+                                            </label>
 
-                            <div className="flex justify-center mt-8 px-4">
-                                <Agenda
-                                    ajuste={"w-full md:w-[67%]"}
-                                    tipoAgenda={"liberarDias"}
-                                    clinica={usuario?.clinica}
-                                />
+                                            <Select
+                                                tipo="clinica"
+                                                value={clinica}
+                                                onChange={(valor) => setClinica(valor)}
+                                                opcoesFiltradas={clinicas}
+                                                ajuste=""
+                                            >
+                                                <option value="">Selecione a clínica</option>
+
+                                                {clinicas.map((c) => (
+                                                    <option key={c.codigo} value={c.codigo}>
+                                                        {c.descricao}
+                                                    </option>
+                                                ))}
+                                            </Select>
+                                        </div>
+
+                                        <div className="w-full lg:w-auto flex justify-center lg:justify-end">
+                                            <Button
+                                                cor="vazado"
+                                                onClick={() => {
+                                                    setClinica("");
+                                                }}
+                                            >
+                                                Limpar filtro
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                
+
+                                <div className="flex justify-center mt-8 px-4">
+                                    <Agenda
+                                        ajuste={"w-full md:w-[67%]"}
+                                        tipoAgenda={"liberarDias"}
+                                        clinica={clinica}
+                                    />
+                                </div>
+
                             </div>
-
-                        </div>
                     )}
 
                     {aba === "consultas" && usuario?.tipoFuncionario === "ATENDENTE" &&(

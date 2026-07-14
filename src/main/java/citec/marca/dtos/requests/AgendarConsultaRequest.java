@@ -17,4 +17,6 @@ public class AgendarConsultaRequest {
     private Long pacienteId;
 
     private MultipartFile arquivo;
+
+    private String turno;
 }

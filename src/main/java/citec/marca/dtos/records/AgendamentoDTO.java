@@ -1,9 +1,6 @@
 package citec.marca.dtos.records;
 
-import citec.marca.entities.enums.EnumClinica;
-import citec.marca.entities.enums.EnumEspecialidades;
-import citec.marca.entities.enums.EnumStatusAgendamento;
-import citec.marca.entities.enums.EnumStatusEncaminhamento;
+import citec.marca.entities.enums.*;
 
 import java.time.LocalDate;
 
@@ -18,6 +15,7 @@ public record AgendamentoDTO(
         String encaminhamentoMedicoPath,
         EnumStatusAgendamento statusAgendamento,
         EnumClinica clinica,
-        Boolean filaDeEspera
+        Boolean filaDeEspera,
+        EnumTurnos turno
 
 ) {}

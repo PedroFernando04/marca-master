@@ -28,4 +28,5 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long>,
 
     Optional<Agendamento> findFirstByFilaDeEsperaAndDataAndClinicaAndEspecialidadeOrderByIdAsc(Boolean filaDeEspera, LocalDate data, EnumClinica clinica, EnumEspecialidades especialidade);
 
+    boolean existsByPacienteAndEspecialidadeAndDataGreaterThanEqualAndStatusAgendamentoNot(Paciente paciente, EnumEspecialidades especialidade, LocalDate data, EnumStatusAgendamento statusAgendamento);
 }

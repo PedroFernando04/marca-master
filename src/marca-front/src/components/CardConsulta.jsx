@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Button from "./basicos/Button";
 
@@ -50,8 +50,32 @@ export default function CardConsulta({
 
     const horas = diferencaMs / (1000 * 60 * 60);
 
-    return horas >= 0 && agendamento.statusEncaminhamento !== "REPROVADO" && agendamento.filaDeEspera === false;
+    return horas >= 0 && agendamento.statusEncaminhamento !== "REPROVADO" && agendamento.filaDeEspera === false && horas <= 24;
   }
+
+  
+    const [clinicas, setClinicas] = useState([]);
+    const somenteClinico = location.state?.clinicoGeral;
+
+    useEffect(() => {
+            async function carregarEnums() {
+                try {
+                    const endpoint = somenteClinico
+                        ? "http://localhost:8080/api/enum/clinicas/clinico-geral"
+                        : "http://localhost:8080/api/enum/clinicas";
+    
+                    const resClinicas = await fetch(endpoint, {
+                        credentials: "include"
+                    });
+                    const clinicasData = await resClinicas.json();
+                    setClinicas(clinicasData);
+                } catch (erro) {
+                    console.error("Erro ao carregar enums:", erro);
+                }
+            }
+    
+            carregarEnums();
+        }, [somenteClinico]);
 
   return (
     <>
@@ -91,12 +115,35 @@ export default function CardConsulta({
             />
 
             <div>
-              <h1 className="font-bold text-xl text-gray-800">
-                {agendamento.clinica}
-              </h1>
+              <div className="flex row-span gap-2">
+                  <p className="font-semibold">{agendamento.clinica}</p>
+                  <span className={`
+                      inline-block
+                      px-3 py-1
+                      rounded-full
+                      text-xs
+                      font-semibold
+                      w-fit
+                      mb-1
+                      ${
+                        agendamento.turno === "MANHA"
+                          ? "bg-blue-100 text-blue-700"
+                          :  "bg-purple-100 text-purple-700"
+                      }
+                    `}>
+                      {agendamento.turno === "MANHA"
+                        ? "Manhã - 07:30"
+                        : "Tarde - 13:00"
+                      }
+                  </span>
+                </div>
 
               <p className="text-sm text-violet-600 font-semibold">
                 {descricaoEspecialidade(agendamento.especialidade)}
+              </p>
+
+              <p className="text-sm text-gray-500">
+                  📍{clinicas.find(c => c.codigo === agendamento.clinica)?.endereco}
               </p>
             </div>
           </div>
@@ -340,7 +387,7 @@ export default function CardConsulta({
               rounded-3xl
 
               w-full
-              max-w-3xl
+              max-w-4xl
 
               p-8
             "
@@ -370,7 +417,28 @@ export default function CardConsulta({
               <div >
                 <p className="text-gray-500 text-sm">Clínica</p>
 
-                <p className="font-semibold">{agendamento.clinica}</p>
+                <div className="flex row-span gap-2">
+                  <p className="font-semibold">{agendamento.clinica}</p>
+                  <span className={`
+                      inline-block
+                      px-3 py-1
+                      rounded-full
+                      text-xs
+                      font-semibold
+                      w-fit
+
+                      ${
+                        agendamento.turno === "MANHA"
+                          ? "bg-blue-100 text-blue-700"
+                          :  "bg-purple-100 text-purple-700"
+                      }
+                    `}>
+                      {agendamento.turno === "MANHA"
+                        ? "Manhã - 07:30"
+                        : "Tarde - 13:00"
+                      }
+                  </span>
+                </div>
               </div>
 
               <div>
@@ -378,6 +446,14 @@ export default function CardConsulta({
 
                 <p className="font-semibold">
                   {descricaoEspecialidade(agendamento.especialidade)}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-gray-500 text-sm">Endereço</p>
+
+                <p className="font-semibold">
+                  📍{clinicas.find(c => c.codigo === agendamento.clinica)?.endereco}
                 </p>
               </div>
 
@@ -390,7 +466,34 @@ export default function CardConsulta({
               </div>
 
               <div>
-                <p className="text-gray-500 text-sm">Status</p>
+                <p className="text-gray-500 text-sm">Status Encaminhamento</p>
+
+                <div className="flex flex-col gap-1 mt-1">
+                  <span
+                    className={`
+                      inline-block
+                      px-3 py-1
+                      rounded-full
+                      text-xs
+                      font-semibold
+                      w-fit
+
+                      ${
+                        agendamento.statusEncaminhamento === "APROVADO"
+                          ? "bg-green-100 text-green-700"
+                          : agendamento.statusEncaminhamento === "REPROVADO"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-yellow-100 text-yellow-700"
+                      }
+                    `}
+                  >
+                    {agendamento.statusEncaminhamento}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-gray-500 text-sm">Status Consulta</p>
 
                 <div className="flex flex-col gap-1 mt-1">
                   <span
@@ -432,8 +535,9 @@ export default function CardConsulta({
                   )}
                 </div>
               </div>
+              
 
-                  {agendamento.encaminhamentoMedicoPath && (
+              {agendamento.encaminhamentoMedicoPath && (
                   <div>
                     <p className="text-sm text-gray-500 mb-2">Encaminhamento</p>
 
@@ -488,11 +592,8 @@ export default function CardConsulta({
                   </div>
                 )}
 
-            </div>
-
-            
-
-            <div className="mt-8">
+              <div className="
+                  mt-4">
               <p className="text-gray-500 text-sm mb-2">Observações</p>
 
               <div
@@ -500,17 +601,18 @@ export default function CardConsulta({
                   bg-gray-50
                   border
                   rounded-2xl
-
+                  break-words
                   p-4
-                  min-h-[120px]
                 "
               >
                 {agendamento.descricaoEncaminhamento || "Nenhuma observação."}
               </div>
             </div>
+
           </div>
         </div>
-      )}
+      </div>
+    )}
 
       {modalCancelar && (
         <div

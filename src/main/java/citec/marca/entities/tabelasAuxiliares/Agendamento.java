@@ -53,6 +53,10 @@ public class Agendamento {
     @Column
     private Boolean filaDeEspera;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private EnumTurnos turno;
+
     public Agendamento() {}
 
     public Agendamento(

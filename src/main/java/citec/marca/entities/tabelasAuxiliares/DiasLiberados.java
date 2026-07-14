@@ -1,8 +1,6 @@
 package citec.marca.entities.tabelasAuxiliares;
 
 import citec.marca.entities.enums.EnumClinica;
-import citec.marca.entities.enums.EnumDiasSemana;
-import citec.marca.entities.enums.EnumEspecialidades;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,7 +9,6 @@ import lombok.Setter;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
@@ -29,12 +26,20 @@ public class DiasLiberados {
     @Enumerated(EnumType.STRING)
     private EnumClinica clinica;
 
+    @Column(nullable = false)
+    private Boolean turnoTarde = true;
+
+    @Column
+    private Boolean turnoManha = true;
+
 
     public DiasLiberados() {}
 
-    public DiasLiberados(LocalDate data, EnumClinica clinica) {
+    public DiasLiberados(LocalDate data, EnumClinica clinica,  Boolean turnoTarde, Boolean turnoManha) {
         this.data = data;
         this.clinica = clinica;
+        this.turnoTarde = turnoTarde != null ? turnoTarde : true;
+        this.turnoManha = turnoManha != null ? turnoManha : true;
     }
 
 }

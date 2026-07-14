@@ -79,22 +79,23 @@ public class PacienteService {
                         .collect(Collectors.toSet());
 
         return diasLiberados.stream()
-                .map(DiasLiberados::getData)
-                .filter(data ->
+                .filter(dia ->
                         diasSemanaEspecialidade.contains(
-                                EnumDiasSemana.de(data.getDayOfWeek())
+                                EnumDiasSemana.de(dia.getData().getDayOfWeek())
                         )
                 )
-                .map(data -> new DiaAgendaDTO(
-                        data.toString(),
+                .map(dia -> new DiaAgendaDTO(
+                        dia.getData().toString(),
                         agendamentoRepository
                                 .countByDataAndClinicaAndEspecialidadeAndStatusAgendamentoNotAndFilaDeEspera(
-                                        data,
+                                        dia.getData(),
                                         cli,
                                         esp,
                                         EnumStatusAgendamento.CANCELADO,
                                         false)
-                                > 3
+                                > 3,
+                        dia.getTurnoManha(),
+                        dia.getTurnoTarde()
                 ))
                 .toList();
     }

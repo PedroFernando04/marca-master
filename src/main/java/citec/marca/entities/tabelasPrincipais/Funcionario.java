@@ -19,7 +19,7 @@ public class Funcionario extends Usuario{
     @Enumerated(EnumType.STRING)
     private EnumTipoFuncionario tipoFuncionario;
 
-    @Column(nullable = false)
+    @Column
     @Enumerated(EnumType.STRING)
     private EnumClinica clinica;
 

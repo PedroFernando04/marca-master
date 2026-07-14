@@ -1,14 +1,12 @@
 package citec.marca.controllers;
 
 import citec.marca.dtos.records.DiaAgendaDTO;
+import citec.marca.dtos.records.DiaLiberadoDTO;
 import citec.marca.services.FuncionarioService;
 import citec.marca.services.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,12 +32,23 @@ public class DiasLiberadosController {
     }
 
     @GetMapping("/clinica")
-    public ResponseEntity<List<String>> listarDiasLiberadosClinica(
+    public ResponseEntity<List<DiaLiberadoDTO>> listarDiasLiberadosClinica(
             @RequestParam String clinica,
             @RequestParam Integer mes,
             @RequestParam Integer ano
     ) {
-        List<String> dias = funcionarioService.buscarDiasLiberadosClinica(clinica, mes, ano);
+        List<DiaLiberadoDTO> dias = funcionarioService.buscarDiasLiberadosClinica(clinica, mes, ano);
         return ResponseEntity.ok(dias);
+    }
+
+    @PutMapping("/turno")
+    public ResponseEntity<Void> atualizarTurno(
+            @RequestParam String clinica,
+            @RequestParam String data,
+            @RequestParam Boolean turnoManha,
+            @RequestParam Boolean turnoTarde
+    ) {
+        funcionarioService.atualizarTurno(clinica, data, turnoManha, turnoTarde);
+        return ResponseEntity.ok().build();
     }
 }

@@ -20,7 +20,7 @@ export default function Cadastro(){
         email:"",
         senha:"",
         matricula:"",
-        clinica:"",
+        clinica:null,
         tipoFuncionario:""
     });
 
@@ -32,7 +32,7 @@ export default function Cadastro(){
     function handleChange(campo, valor){
         setForm({
             ...form,
-            [campo]: valor
+            [campo]: valor 
         });
 
         if (campo === "email"){
@@ -101,7 +101,7 @@ export default function Cadastro(){
     return(
         <div className="min-h-screen flex-col items-center justify-center">
 
-            <SlideButton onChange={setAba} texto1={"Paciente"} texto2={"Responsável"}></SlideButton>
+            <SlideButton onChange={setAba} texto1={"Paciente"} texto2={"Funcionário"}></SlideButton>
 
             <div className="flex justify-center">
             {aba === "agendamento" && (
@@ -163,15 +163,7 @@ export default function Cadastro(){
                                 {erroEmail}
                             </span>
                         )}
-                        <div className="flex flex-col gap-2">
-                            <label className="text-base font-bold ml-5 mt-5">Clínica</label>
-                            <Select 
-                                tipo={"clinica"} 
-                                ajuste={"ml-5 w-[90%]"} 
-                                value={form.clinica} 
-                                onChange={(valor) => handleChange("clinica", valor)}>
-                            </Select>
-                        </div>
+                    
                         <div className="flex flex-col gap-2">
                             <label className="text-base font-bold ml-5 mt-5">Tipo</label>
                             <Select 
@@ -181,6 +173,20 @@ export default function Cadastro(){
                                 onChange={(valor) => handleChange("tipoFuncionario", valor)}>
                             </Select>
                         </div>
+
+                        {form.tipoFuncionario === "ATENDENTE" && (
+
+                            <div className="flex flex-col gap-2">
+                                <label className="text-base font-bold ml-5 mt-5">Clínica</label>
+                                <Select 
+                                    tipo={"clinica"} 
+                                    ajuste={"ml-5 w-[90%]"} 
+                                    value={form.clinica} 
+                                    onChange={(valor) => handleChange("clinica", valor)}>
+                                </Select>
+                            </div>
+                        )}
+
                         <Input tipo="senha" onChange={(valor) => handleChange("senha", valor)}></Input>
 
                         <Button cor="fundo" ajuste="m-5 w-[90%]" type="submit">
