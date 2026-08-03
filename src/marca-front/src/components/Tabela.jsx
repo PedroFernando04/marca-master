@@ -496,7 +496,7 @@ export default function Tabela({
       </div>
 
       {totalPaginas > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-5 bg-white/80 p-3 rounded-3xl shadow-lg">
+        <div className="flex justify-center items-center gap-4 mt-5 bg-white/80 p-3 rounded-3xl shadow-lg w-fit ml-[33%]">
           <Button
             disabled={pagina === 0}
             onClick={() => setPagina(pagina - 1)}

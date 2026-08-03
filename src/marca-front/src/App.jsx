@@ -3,6 +3,7 @@ import Cadastro from "./telas/Cadastro";
 import Entrar from "./telas/Entrar";
 import Home from "./telas/Home";
 import Agendar from "./telas/Agendar";
+import DiaConsultorio from "./telas/DiaConsultorio";
 
 import { Routes, Route } from "react-router-dom";
 
@@ -29,6 +30,14 @@ function App() {
         element={
           <PrivateRoute>
             <Agendar />
+          </PrivateRoute> 
+        }
+      />
+      <Route 
+        path = "admin/dia-consultorio" 
+        element={
+          <PrivateRoute>
+            <DiaConsultorio />
           </PrivateRoute> 
         }
       />
