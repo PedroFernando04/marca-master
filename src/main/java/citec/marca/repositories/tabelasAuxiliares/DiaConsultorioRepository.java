@@ -18,6 +18,10 @@ public interface DiaConsultorioRepository extends JpaRepository<DiaConsultorio, 
 
     List<DiaConsultorio> findByClinicaAndEspecialidade(EnumClinica clinica, EnumEspecialidades especialidade);
 
+    List<DiaConsultorio> findAllByOrderByClinicaAscDiaSemanaAscTurnoAsc();
+
+    List<DiaConsultorio> findByClinicaOrderByDiaSemanaAscTurnoAsc(EnumClinica clinica);
+
     @Query("""
         SELECT DISTINCT d.especialidade
         FROM DiaConsultorio d

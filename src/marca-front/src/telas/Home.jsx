@@ -477,6 +477,10 @@ export default function Home(){
                                             >
                                                 Limpar filtro
                                             </Button>
+
+                                            <Button cor="fundo" rota="/gerenciar-consultorio">
+                                                Gerenciar Consultório
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
