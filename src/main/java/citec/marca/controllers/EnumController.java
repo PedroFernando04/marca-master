@@ -31,6 +31,14 @@
                     .toList();
         }
 
+        @GetMapping("/turnos")
+        public List<TurnoDTO> listarTurnos() {
+            return Arrays.stream(EnumTurnos.values())
+                    .sorted(Comparator.comparing(EnumTurnos::getDescricao))
+                    .map(e -> new TurnoDTO(e.name(), e.getDescricao()))
+                    .toList();
+        }
+
         @GetMapping("/especialidades/{clinica}")
         public List<EspecialidadeDTO> listarEspecialidadesPorClinica(
                 @PathVariable String clinica
@@ -52,6 +60,14 @@
             return Arrays.stream(EnumClinica.values())
                     .sorted(Comparator.comparing(EnumClinica::getDescricao))
                     .map(e -> new ClinicaDTO(e.name(), e.getDescricao(), e.getEndereco()))
+                    .toList();
+        }
+
+        @GetMapping("/diasSemana")
+        public List<DiaSemanaDTO> listarDiasSemana() {
+            return Arrays.stream(EnumDiasSemana.values())
+                    .sorted(Comparator.comparing(EnumDiasSemana::ordinal))
+                    .map(e -> new DiaSemanaDTO(e.name(), e.getDescricao()))
                     .toList();
         }
 

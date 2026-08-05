@@ -7,6 +7,7 @@ export default function TabelaDiaConsultorio({
   registros,
   setRegistros,
   especialidades,
+  onAlterado,
 }) {
   const [editandoId, setEditandoId] = useState(null);
   const [novaEspecialidade, setNovaEspecialidade] = useState("");
@@ -56,6 +57,41 @@ export default function TabelaDiaConsultorio({
       alert("Erro ao atualizar especialidade");
     } finally {
       setSalvando(false);
+    }
+  }
+
+  const [excluindoId, setExcluindoId] = useState(null);
+
+async function excluirRegistro(id) {
+  const confirmar = window.confirm(
+    "Tem certeza que deseja excluir este registro?"
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  setExcluindoId(id);
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/diaConsultorio/${id}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Erro ao excluir registro");
+    }
+
+      onAlterado?.();
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao excluir registro");
+    } finally {
+      setExcluindoId(null);
     }
   }
 
@@ -120,9 +156,19 @@ export default function TabelaDiaConsultorio({
                     </Button>
                   </>
                 ) : (
-                  <Button cor="vazado" onClick={() => iniciarEdicao(registro)}>
-                    Editar
-                  </Button>
+                  <>
+                    <Button cor="vazado" onClick={() => iniciarEdicao(registro)}>
+                      Editar
+                    </Button>
+
+                    <Button
+                      cor="excluir"
+                      disabled={excluindoId === registro.id}
+                      onClick={() => excluirRegistro(registro.id)}
+                    >
+                      Excluir
+                    </Button>
+                  </>
                 )}
               </td>
             </tr>

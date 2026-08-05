@@ -6,6 +6,7 @@ import citec.marca.entities.enums.EnumEspecialidades;
 import citec.marca.entities.enums.EnumTurnos;
 import citec.marca.entities.tabelasAuxiliares.DiaConsultorio;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,13 +15,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DiaConsultorioRepository extends JpaRepository<DiaConsultorio, Long> {
+public interface DiaConsultorioRepository extends JpaRepository<DiaConsultorio, Long>, JpaSpecificationExecutor<DiaConsultorio> {
 
     List<DiaConsultorio> findByClinicaAndEspecialidade(EnumClinica clinica, EnumEspecialidades especialidade);
-
-    List<DiaConsultorio> findAllByOrderByClinicaAscDiaSemanaAscTurnoAsc();
-
-    List<DiaConsultorio> findByClinicaOrderByDiaSemanaAscTurnoAsc(EnumClinica clinica);
 
     @Query("""
         SELECT DISTINCT d.especialidade

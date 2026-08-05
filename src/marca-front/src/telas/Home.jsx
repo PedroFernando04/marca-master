@@ -444,6 +444,7 @@ export default function Home(){
                                         shadow-lg
                                         p-5
                                         overflow-hidden
+                                        w-full max-w-6xl
                                         "
                                     >
                                         <div className="flex flex-col gap-2 min-w-[220px]">
@@ -489,7 +490,7 @@ export default function Home(){
 
                                 <div className="flex justify-center mt-8 px-4">
                                     <Agenda
-                                        ajuste={"w-full md:w-[67%]"}
+                                        ajuste={"w-full max-w-6xl"}
                                         tipoAgenda={"liberarDias"}
                                         clinica={clinica}
                                     />
