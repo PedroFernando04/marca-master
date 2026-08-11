@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import citec.marca.repositories.tabelasAuxiliares.DiaConsultorioRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,10 +32,31 @@ public class AgendamentoService {
     @Autowired
     private AgendamentoRepository agendamentoRepository;
 
+    @Autowired
+    private DiaConsultorioRepository diaConsultorioRepository;
+
     public Agendamento agendarConsulta(AgendarConsultaRequest request) throws IOException {
 
         Paciente paciente = pacienteRepository.findById(request.getPacienteId()).orElseThrow();
         EnumEspecialidades especialidade = EnumEspecialidades.valueOf(request.getEspecialidade());
+        EnumClinica clinica = EnumClinica.valueOf(request.getClinica());
+        EnumTurnos turno = EnumTurnos.valueOf(request.getTurno());
+        LocalDate dataConsulta = LocalDate.parse(request.getData());
+        EnumDiasSemana diaSemana = EnumDiasSemana.de(dataConsulta.getDayOfWeek());
+
+        boolean especialidadeAtendeNesseTurno =
+                diaConsultorioRepository.existsByClinicaAndEspecialidadeAndDiaSemanaAndTurno(
+                        clinica, especialidade, diaSemana, turno
+                );
+
+        if (!especialidadeAtendeNesseTurno) {
+            throw new IllegalArgumentException(
+                    "Esta especialidade não atende no turno da " +
+                            (turno == EnumTurnos.MANHA ? "manhã" : "tarde") +
+                            " neste dia."
+            );
+        }
+
         boolean jaExiste = agendamentoRepository.existsByPacienteAndEspecialidade(paciente,especialidade);
         EnumTipoAgendamento tipo = jaExiste ? EnumTipoAgendamento.RETORNO : EnumTipoAgendamento.PRIMEIRA_CONSULTA;
 
@@ -76,8 +98,8 @@ public class AgendamentoService {
         Agendamento agendamento = new Agendamento();
 
         agendamento.setPaciente(paciente);
-        agendamento.setClinica(EnumClinica.valueOf(request.getClinica()));
-        agendamento.setData(LocalDate.parse(request.getData()));
+        agendamento.setClinica(clinica);
+        agendamento.setData(dataConsulta);
         agendamento.setEspecialidade(especialidade);
         agendamento.setTipo(tipo);
         agendamento.setEncaminhamentoMedicoPath(caminhoArquivo);
@@ -87,11 +109,11 @@ public class AgendamentoService {
                         ? EnumStatusEncaminhamento.APROVADO
                         : EnumStatusEncaminhamento.AGUARDANDO
         );
-        agendamento.setTurno(EnumTurnos.valueOf(request.getTurno()));
+        agendamento.setTurno(turno);
         Long quantidadeDeAgendamentos = agendamentoRepository
                 .countByDataAndClinicaAndEspecialidadeAndStatusAgendamentoNotAndFilaDeEspera(
-                        LocalDate.parse(request.getData()),
-                        EnumClinica.valueOf(request.getClinica()),
+                        dataConsulta,
+                        clinica,
                         especialidade, EnumStatusAgendamento.CANCELADO,
                         false);
         agendamento.setFilaDeEspera(quantidadeDeAgendamentos > 3);

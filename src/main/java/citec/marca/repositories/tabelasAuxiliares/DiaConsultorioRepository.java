@@ -40,4 +40,11 @@ public interface DiaConsultorioRepository extends JpaRepository<DiaConsultorio, 
     """)
     List<EnumClinica> findDistinctClinicasByEspecialidade(@Param("especialidade") EnumEspecialidades especialidade);
 
+    boolean existsByClinicaAndEspecialidadeAndDiaSemanaAndTurno(
+            EnumClinica clinica,
+            EnumEspecialidades especialidade,
+            EnumDiasSemana diaSemana,
+            EnumTurnos turno
+    );
+
 }

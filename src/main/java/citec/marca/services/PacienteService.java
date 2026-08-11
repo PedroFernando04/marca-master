@@ -15,12 +15,14 @@ import citec.marca.repositories.tabelasPrincipais.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import citec.marca.entities.enums.EnumTurnos;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class PacienteService {
@@ -73,30 +75,39 @@ public class PacienteService {
         List<DiaConsultorio> diasEspecialidadeAtua =
                 diaConsultorioRepository.findByClinicaAndEspecialidade(cli, esp);
 
-        Set<EnumDiasSemana> diasSemanaEspecialidade =
+        Map<EnumDiasSemana, Set<EnumTurnos>> turnosPorDiaSemana =
                 diasEspecialidadeAtua.stream()
-                        .map(DiaConsultorio::getDiaSemana)
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.groupingBy(
+                                DiaConsultorio::getDiaSemana,
+                                Collectors.mapping(DiaConsultorio::getTurno, Collectors.toSet())
+                        ));
 
         return diasLiberados.stream()
                 .filter(dia ->
-                        diasSemanaEspecialidade.contains(
+                        turnosPorDiaSemana.containsKey(
                                 EnumDiasSemana.de(dia.getData().getDayOfWeek())
                         )
                 )
-                .map(dia -> new DiaAgendaDTO(
-                        dia.getData().toString(),
-                        agendamentoRepository
-                                .countByDataAndClinicaAndEspecialidadeAndStatusAgendamentoNotAndFilaDeEspera(
-                                        dia.getData(),
-                                        cli,
-                                        esp,
-                                        EnumStatusAgendamento.CANCELADO,
-                                        false)
-                                > 3,
-                        dia.getTurnoManha(),
-                        dia.getTurnoTarde()
-                ))
+                .map(dia -> {
+                    Set<EnumTurnos> turnosDaEspecialidade =
+                            turnosPorDiaSemana.get(EnumDiasSemana.de(dia.getData().getDayOfWeek()));
+
+                    // só oferece o turno se a CLÍNICA liberou E a ESPECIALIDADE atua nele
+                    boolean turnoManha = dia.getTurnoManha() && turnosDaEspecialidade.contains(EnumTurnos.MANHA);
+                    boolean turnoTarde = dia.getTurnoTarde() && turnosDaEspecialidade.contains(EnumTurnos.TARDE);
+
+                    return new DiaAgendaDTO(
+                            dia.getData().toString(),
+                            agendamentoRepository
+                                    .countByDataAndClinicaAndEspecialidadeAndStatusAgendamentoNotAndFilaDeEspera(
+                                            dia.getData(), cli, esp,
+                                            EnumStatusAgendamento.CANCELADO, false)
+                                    > 3,
+                            turnoManha,
+                            turnoTarde
+                    );
+                })
+                .filter(dto -> dto.turnoManha() || dto.turnoTarde()) // remove dias sem turno válido
                 .toList();
     }
 }
